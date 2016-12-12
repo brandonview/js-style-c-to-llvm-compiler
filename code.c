@@ -1,7 +1,13 @@
-void f()
+void foo()
 {
-    int *x;
+    int x;
     int y;
 
     y = x;
+
+    void bar(int b)
+    {
+        int a;
+        a = a + b;
+    }
 }

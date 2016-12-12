@@ -87,47 +87,54 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 67 "parser.y"
+#line 71 "parser.y"
 
-    char *name;
-    llvm::Value *llvalue;
-    int value;
-    Type *type;
-    std::list<int> *indices;
-    // For LValue
-    struct {
+        char *name;
+        llvm::Value *llvalue;
+        int value;
         Type *type;
-        llvm::Value *lladdress;
-        std::vector<llvm::Value *> *llindices;
-    } lvalue;
-    // For mid-rule actions in logical expressions
-    struct {
-        llvm::BasicBlock *lhs_basic_block;
-        llvm::BasicBlock *rhs_basic_block;
-        llvm::BasicBlock *end_basic_block;
-    } logical;
-    // For mid-rule actions in "if" statement
-    struct {
-        llvm::BasicBlock *then_basic_block;
-        llvm::BasicBlock *else_basic_block;
-        llvm::BasicBlock *end_basic_block;
-    } if_statement;
-    // For mid-rule actions in "while" statement
-    struct {
-        llvm::BasicBlock *cond_basic_block;
-        llvm::BasicBlock *body_basic_block;
-        llvm::BasicBlock *end_basic_block;
-    } while_statement;
-    // For 'FormalArguments' and 'FormalArgumentsComma'
-    std::vector<Symbol *> *formal_arguments;
-    // For 'FunctionDeclaration'
-    Symbol *symbol;
-    // For 'ActualArguments' and 'ActualArgummentsComma'
-    std::vector<llvm::Value *> *actual_arguments;
+        std::list<int> *indices;
 
+        // For LValue
+        struct {
+            Type *type;
+            llvm::Value *lladdress;
+            std::vector<llvm::Value *> *llindices;
+        } lvalue;
+
+        // For mid-rule actions in logical expressions
+        struct {
+            llvm::BasicBlock *lhs_basic_block;
+            llvm::BasicBlock *rhs_basic_block;
+            llvm::BasicBlock *end_basic_block;
+        } logical;
+
+        // For mid-rule actions in "if" statement
+        struct {
+            llvm::BasicBlock *then_basic_block;
+            llvm::BasicBlock *else_basic_block;
+            llvm::BasicBlock *end_basic_block;
+        } if_statement;
+
+        // For mid-rule actions in "while" statement
+        struct {
+            llvm::BasicBlock *cond_basic_block;
+            llvm::BasicBlock *body_basic_block;
+            llvm::BasicBlock *end_basic_block;
+        } while_statement;
+
+        // For 'FormalArguments' and 'FormalArgumentsComma'
+        std::vector<Symbol *> *formal_arguments;
+
+        // For 'FunctionDeclaration'
+        Symbol *symbol;
+
+        // For 'ActualArguments' and 'ActualArgummentsComma'
+        std::vector<llvm::Value *> *actual_arguments;
+    
 
 /* Line 2058 of yacc.c  */
-#line 131 "parser.h"
+#line 138 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

@@ -75,21 +75,24 @@
 #include <llvm/IR/Function.h>
 #include "SymbolTable.h"
 #include "Type.h"
-extern "C" int yylex();
-extern "C" int yyparse();
-extern "C" FILE *yyin;
-void yyerror(const char *s);
-// Module, function, basic block, and builder
-llvm::Module *module;
-llvm::Function *function;
-llvm::BasicBlock *basic_block;
-llvm::IRBuilder<> *builder;
-// Environment: stack of symbol tables. It is actually implemented as a list
-// to facilitate the traversal of symbol tables.
-std::list<SymbolTable *> environment;
+    extern "C" int yylex();
+    extern "C" int yyparse();
+    extern "C" FILE *yyin;
+    void yyerror(const char *s);
 
+    // Module, function, basic block, and builder
+    llvm::Module *module;
+    llvm::Function *function;
+    llvm::BasicBlock *basic_block;
+    llvm::IRBuilder<> *builder;
+
+    // Environment: stack of symbol tables. It is actually implemented as a list
+
+    // to facilitate the traversal of symbol tables.
+    std::list<SymbolTable *> environment;
+    
 /* Line 371 of yacc.c  */
-#line 93 "parser.c"
+#line 96 "parser.c"
 
 # ifndef YY_NULL
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -166,47 +169,54 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 387 of yacc.c  */
-#line 67 "parser.y"
+#line 71 "parser.y"
 
-    char *name;
-    llvm::Value *llvalue;
-    int value;
-    Type *type;
-    std::list<int> *indices;
-    // For LValue
-    struct {
+        char *name;
+        llvm::Value *llvalue;
+        int value;
         Type *type;
-        llvm::Value *lladdress;
-        std::vector<llvm::Value *> *llindices;
-    } lvalue;
-    // For mid-rule actions in logical expressions
-    struct {
-        llvm::BasicBlock *lhs_basic_block;
-        llvm::BasicBlock *rhs_basic_block;
-        llvm::BasicBlock *end_basic_block;
-    } logical;
-    // For mid-rule actions in "if" statement
-    struct {
-        llvm::BasicBlock *then_basic_block;
-        llvm::BasicBlock *else_basic_block;
-        llvm::BasicBlock *end_basic_block;
-    } if_statement;
-    // For mid-rule actions in "while" statement
-    struct {
-        llvm::BasicBlock *cond_basic_block;
-        llvm::BasicBlock *body_basic_block;
-        llvm::BasicBlock *end_basic_block;
-    } while_statement;
-    // For 'FormalArguments' and 'FormalArgumentsComma'
-    std::vector<Symbol *> *formal_arguments;
-    // For 'FunctionDeclaration'
-    Symbol *symbol;
-    // For 'ActualArguments' and 'ActualArgummentsComma'
-    std::vector<llvm::Value *> *actual_arguments;
+        std::list<int> *indices;
 
+        // For LValue
+        struct {
+            Type *type;
+            llvm::Value *lladdress;
+            std::vector<llvm::Value *> *llindices;
+        } lvalue;
+
+        // For mid-rule actions in logical expressions
+        struct {
+            llvm::BasicBlock *lhs_basic_block;
+            llvm::BasicBlock *rhs_basic_block;
+            llvm::BasicBlock *end_basic_block;
+        } logical;
+
+        // For mid-rule actions in "if" statement
+        struct {
+            llvm::BasicBlock *then_basic_block;
+            llvm::BasicBlock *else_basic_block;
+            llvm::BasicBlock *end_basic_block;
+        } if_statement;
+
+        // For mid-rule actions in "while" statement
+        struct {
+            llvm::BasicBlock *cond_basic_block;
+            llvm::BasicBlock *body_basic_block;
+            llvm::BasicBlock *end_basic_block;
+        } while_statement;
+
+        // For 'FormalArguments' and 'FormalArgumentsComma'
+        std::vector<Symbol *> *formal_arguments;
+
+        // For 'FunctionDeclaration'
+        Symbol *symbol;
+
+        // For 'ActualArguments' and 'ActualArgummentsComma'
+        std::vector<llvm::Value *> *actual_arguments;
+    
 
 /* Line 387 of yacc.c  */
-#line 210 "parser.c"
+#line 220 "parser.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -234,7 +244,7 @@ int yyparse ();
 /* Copy the second part of user declarations.  */
 
 /* Line 390 of yacc.c  */
-#line 238 "parser.c"
+#line 248 "parser.c"
 
 #ifdef short
 # undef short
@@ -463,7 +473,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  61
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  109
+#define YYNSTATES  110
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -512,13 +522,13 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     6,     9,    14,    15,    22,    25,
-      31,    32,    36,    37,    42,    43,    48,    50,    53,    55,
-      57,    59,    60,    66,    67,    70,    73,    78,    79,    85,
-      87,    88,    93,    94,    95,   103,   104,   111,   113,   115,
-     119,   123,   127,   131,   135,   139,   143,   147,   151,   155,
-     159,   160,   165,   166,   171,   176,   177,   180,   181,   185,
-     187,   192
+       0,     0,     3,     5,     6,     9,    14,    15,    23,    26,
+      32,    33,    37,    38,    43,    44,    49,    51,    54,    56,
+      58,    60,    61,    67,    68,    71,    74,    79,    80,    86,
+      88,    89,    94,    95,    96,   104,   105,   112,   114,   116,
+     120,   124,   128,   132,   136,   140,   144,   148,   152,   156,
+     160,   161,   166,   167,   172,   177,   178,   181,   182,   186,
+     188,   193
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
@@ -526,36 +536,36 @@ static const yytype_int8 yyrhs[] =
 {
       37,     0,    -1,    38,    -1,    -1,    38,    39,    -1,    45,
        7,    44,    15,    -1,    -1,    41,     9,    40,    38,    48,
-      10,    -1,    41,    15,    -1,    45,     7,    13,    42,    14,
-      -1,    -1,    43,    45,     7,    -1,    -1,    43,    45,     7,
-      16,    -1,    -1,    11,     8,    12,    44,    -1,    46,    -1,
-      45,    31,    -1,     3,    -1,     4,    -1,     5,    -1,    -1,
-       6,     9,    47,    38,    10,    -1,    -1,    48,    49,    -1,
-      56,    15,    -1,    61,    18,    56,    15,    -1,    -1,     9,
-      50,    38,    48,    10,    -1,    54,    -1,    -1,    54,    34,
-      51,    49,    -1,    -1,    -1,    35,    52,    13,    56,    14,
-      53,    49,    -1,    -1,    32,    13,    56,    14,    55,    49,
-      -1,    61,    -1,     8,    -1,    56,    29,    56,    -1,    56,
-      28,    56,    -1,    56,    31,    56,    -1,    56,    30,    56,
-      -1,    13,    56,    14,    -1,    56,    22,    56,    -1,    56,
-      23,    56,    -1,    56,    24,    56,    -1,    56,    25,    56,
-      -1,    56,    27,    56,    -1,    56,    26,    56,    -1,    -1,
-      56,    19,    57,    56,    -1,    -1,    56,    20,    58,    56,
-      -1,     7,    13,    59,    14,    -1,    -1,    60,    56,    -1,
-      -1,    60,    56,    16,    -1,     7,    -1,    61,    11,    56,
-      12,    -1,    61,    17,     7,    -1
+      38,    10,    -1,    41,    15,    -1,    45,     7,    13,    42,
+      14,    -1,    -1,    43,    45,     7,    -1,    -1,    43,    45,
+       7,    16,    -1,    -1,    11,     8,    12,    44,    -1,    46,
+      -1,    45,    31,    -1,     3,    -1,     4,    -1,     5,    -1,
+      -1,     6,     9,    47,    38,    10,    -1,    -1,    48,    49,
+      -1,    56,    15,    -1,    61,    18,    56,    15,    -1,    -1,
+       9,    50,    38,    48,    10,    -1,    54,    -1,    -1,    54,
+      34,    51,    49,    -1,    -1,    -1,    35,    52,    13,    56,
+      14,    53,    49,    -1,    -1,    32,    13,    56,    14,    55,
+      49,    -1,    61,    -1,     8,    -1,    56,    29,    56,    -1,
+      56,    28,    56,    -1,    56,    31,    56,    -1,    56,    30,
+      56,    -1,    13,    56,    14,    -1,    56,    22,    56,    -1,
+      56,    23,    56,    -1,    56,    24,    56,    -1,    56,    25,
+      56,    -1,    56,    27,    56,    -1,    56,    26,    56,    -1,
+      -1,    56,    19,    57,    56,    -1,    -1,    56,    20,    58,
+      56,    -1,     7,    13,    59,    14,    -1,    -1,    60,    56,
+      -1,    -1,    60,    56,    16,    -1,     7,    -1,    61,    11,
+      56,    12,    -1,    61,    17,     7,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   106,   106,   107,   108,   110,   144,   143,   186,   188,
-     214,   217,   225,   228,   236,   239,   245,   249,   256,   261,
-     266,   272,   271,   292,   293,   295,   296,   305,   304,   315,
-     324,   323,   347,   368,   346,   387,   386,   413,   421,   426,
-     431,   436,   441,   446,   450,   454,   458,   462,   466,   470,
-     475,   474,   511,   510,   546,   564,   567,   573,   576,   582,
-     610,   625
+       0,   118,   118,   120,   121,   124,   165,   164,   220,   222,
+     256,   260,   269,   273,   282,   286,   293,   298,   306,   312,
+     318,   325,   324,   352,   353,   355,   356,   366,   365,   380,
+     392,   391,   422,   447,   421,   472,   471,   503,   512,   518,
+     524,   530,   536,   542,   547,   552,   557,   562,   567,   572,
+     578,   577,   623,   622,   667,   689,   693,   700,   704,   711,
+     744,   763
 };
 #endif
 
@@ -607,7 +617,7 @@ static const yytype_uint8 yyr1[] =
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     0,     2,     4,     0,     6,     2,     5,
+       0,     2,     1,     0,     2,     4,     0,     7,     2,     5,
        0,     3,     0,     4,     0,     4,     1,     2,     1,     1,
        1,     0,     5,     0,     2,     2,     4,     0,     5,     1,
        0,     4,     0,     0,     7,     0,     6,     1,     1,     3,
@@ -623,49 +633,49 @@ static const yytype_uint8 yydefact[] =
 {
        3,     0,     2,     1,    18,    19,    20,     0,     4,     0,
        0,    16,    21,     6,     8,    14,    17,     3,     3,     0,
-      12,     0,     0,    23,     0,     0,     0,     5,    22,     0,
-      14,     9,     0,    59,    38,    27,     7,     0,     0,    32,
+      12,     0,     0,    23,     0,     0,     0,     5,    22,     3,
+      14,     9,     0,    59,    38,    27,     0,     0,    32,     0,
       24,    29,     0,    37,    15,    11,    57,     3,     0,    37,
-       0,     0,    30,    25,    50,    52,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,    13,
-       0,     0,    23,    43,     0,     0,     0,     0,     0,    44,
-      45,    46,    47,    49,    48,    40,    39,    42,    41,     0,
-      61,     0,    54,    56,     0,    35,     0,    31,    51,    53,
-      60,    26,    58,    28,     0,    33,    36,     0,    34
+       0,     0,     7,    30,    25,    50,    52,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+      13,     0,     0,    23,    43,     0,     0,     0,     0,     0,
+      44,    45,    46,    47,    49,    48,    40,    39,    42,    41,
+       0,    61,     0,    54,    56,     0,    35,     0,    31,    51,
+      53,    60,    26,    58,    28,     0,    33,    36,     0,    34
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
       -1,     1,     2,     8,    18,     9,    25,    26,    21,    10,
-      11,    17,    29,    40,    47,    76,    51,   107,    41,   104,
-      42,    77,    78,    70,    71,    49
+      11,    17,    29,    40,    47,    77,    51,   108,    41,   105,
+      42,    78,    79,    71,    72,    49
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -74
+#define YYPACT_NINF -73
 static const yytype_int16 yypact[] =
 {
-     -74,     5,    95,   -74,   -74,   -74,   -74,     7,   -74,     3,
-       2,   -74,   -74,   -74,   -74,     4,   -74,   -74,   -74,    11,
-      24,    25,   247,    95,    38,    34,    95,   -74,   -74,    36,
-      55,   -74,     6,    54,   -74,   -74,   -74,    48,    56,   -74,
-     -74,    39,   136,    -7,   -74,    58,    66,   -74,    83,    -9,
-      48,    57,   -74,   -74,   -74,   -74,    48,    48,    48,    48,
-      48,    48,    48,    48,    48,    48,    48,    74,    48,   -74,
-      68,    48,    95,   -74,   101,    48,    51,    48,    48,   191,
-     210,   218,   233,   239,   244,    32,    32,   -74,   -74,    65,
-     -74,   153,   -74,   169,    44,   -74,   119,   -74,   181,   201,
-     -74,   -74,   -74,   -74,    51,   -74,   -74,    51,   -74
+     -73,     7,    93,   -73,   -73,   -73,   -73,     5,   -73,    30,
+       4,   -73,   -73,   -73,   -73,     6,   -73,   -73,   -73,    10,
+      28,    31,   245,    93,    35,    47,    93,   -73,   -73,    49,
+      52,   -73,     9,     8,   -73,   -73,    46,    51,   -73,   253,
+     -73,    26,   134,    -5,   -73,    57,    64,   -73,    81,    -7,
+      46,    67,   -73,   -73,   -73,   -73,   -73,    46,    46,    46,
+      46,    46,    46,    46,    46,    46,    46,    46,    58,    46,
+     -73,    88,    46,    93,   -73,    99,    46,    49,    46,    46,
+     189,   208,   216,   239,    41,   244,   -28,   -28,   -73,   -73,
+      63,   -73,   151,   -73,   167,    42,   -73,   117,   -73,   179,
+     199,   -73,   -73,   -73,   -73,    49,   -73,   -73,    49,   -73
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -74,   -74,   -11,   -74,   -74,   -74,   -74,   -74,    42,    78,
-     -74,   -74,    45,   -73,   -74,   -74,   -74,   -74,   -74,   -74,
-     -36,   -74,   -74,   -74,   -74,   -29
+     -73,   -73,    -9,   -73,   -73,   -73,   -73,   -73,    84,    89,
+     -73,   -73,    43,   -72,   -73,   -73,   -73,   -73,   -73,   -73,
+     -35,   -73,   -73,   -73,   -73,   -29
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -674,71 +684,71 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -56
 static const yytype_int8 yytable[] =
 {
-      43,    48,    66,    97,    66,     3,    22,    23,    67,    15,
-      67,    68,    13,    45,    74,    19,    12,    20,    14,    24,
-      79,    80,    81,    82,    83,    84,    85,    86,    87,    88,
-      89,   106,    91,    16,   108,    93,    72,    16,   -10,    96,
-      27,    98,    99,    33,    34,    35,    36,    43,    31,    37,
-      30,    33,    34,    35,   103,    33,    34,    37,    33,    34,
-      35,    37,    64,    65,    37,    43,    19,    46,    38,    50,
-      75,    39,    44,    52,    69,    43,    38,   100,    43,    39,
-     -55,    90,    92,    38,    54,    55,    39,    56,    57,    58,
-      59,    60,    61,    62,    63,    64,    65,    73,     4,     5,
-       6,     7,    54,    55,    32,    56,    57,    58,    59,    60,
-      61,    62,    63,    64,    65,    95,     0,    94,     0,     0,
-      54,    55,     0,    56,    57,    58,    59,    60,    61,    62,
-      63,    64,    65,   105,     0,     0,     0,     0,    54,    55,
-       0,    56,    57,    58,    59,    60,    61,    62,    63,    64,
-      65,    53,     0,     0,     0,    54,    55,     0,    56,    57,
-      58,    59,    60,    61,    62,    63,    64,    65,   101,     0,
-       0,     0,    54,    55,     0,    56,    57,    58,    59,    60,
-      61,    62,    63,    64,    65,   102,     0,     0,    54,    55,
-       0,    56,    57,    58,    59,    60,    61,    62,    63,    64,
-      65,    55,     0,    56,    57,    58,    59,    60,    61,    62,
-      63,    64,    65,   -56,    57,    58,    59,    60,    61,    62,
-      63,    64,    65,    56,    57,    58,    59,    60,    61,    62,
-      63,    64,    65,   -56,    58,    59,    60,    61,    62,    63,
-      64,    65,   -56,    59,    60,    61,    62,    63,    64,    65,
-       4,     5,     6,     7,     0,     0,     0,    28,   -56,    60,
-      61,    62,    63,    64,    65,   -56,    61,    62,    63,    64,
-      65,   -56,    62,    63,    64,    65
+      43,    48,    65,    66,    67,    98,    67,     3,    22,    23,
+      68,    15,    68,    69,    12,    75,    45,    19,    24,    20,
+      39,    46,    80,    81,    82,    83,    84,    85,    86,    87,
+      88,    89,    90,   107,    92,    16,   109,    94,    73,    13,
+      16,    97,   -10,    99,   100,    14,    27,    30,    43,    33,
+      34,    35,   104,    33,    34,    36,    33,    34,    35,    36,
+      53,    31,    36,    19,    50,    91,    43,   -56,    62,    63,
+      64,    65,    66,    70,    37,   101,    43,    38,   -55,    43,
+      76,    37,    55,    56,    38,    57,    58,    59,    60,    61,
+      62,    63,    64,    65,    66,    74,     4,     5,     6,     7,
+      55,    56,    93,    57,    58,    59,    60,    61,    62,    63,
+      64,    65,    66,    96,    44,    32,    95,     0,    55,    56,
+       0,    57,    58,    59,    60,    61,    62,    63,    64,    65,
+      66,   106,     0,     0,     0,     0,    55,    56,     0,    57,
+      58,    59,    60,    61,    62,    63,    64,    65,    66,    54,
+       0,     0,     0,    55,    56,     0,    57,    58,    59,    60,
+      61,    62,    63,    64,    65,    66,   102,     0,     0,     0,
+      55,    56,     0,    57,    58,    59,    60,    61,    62,    63,
+      64,    65,    66,   103,     0,     0,    55,    56,     0,    57,
+      58,    59,    60,    61,    62,    63,    64,    65,    66,    56,
+       0,    57,    58,    59,    60,    61,    62,    63,    64,    65,
+      66,   -56,    58,    59,    60,    61,    62,    63,    64,    65,
+      66,    57,    58,    59,    60,    61,    62,    63,    64,    65,
+      66,   -56,    59,    60,    61,    62,    63,    64,    65,    66,
+     -56,    60,    61,    62,    63,    64,    65,    66,     4,     5,
+       6,     7,     0,     0,     0,    28,     4,     5,     6,     7,
+       0,     0,     0,    52,   -56,    61,    62,    63,    64,    65,
+      66,   -56,    63,    64,    65,    66
 };
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-74)))
+  (!!((Yystate) == (-73)))
 
 #define yytable_value_is_error(Yytable_value) \
   (!!((Yytable_value) == (-56)))
 
 static const yytype_int8 yycheck[] =
 {
-      29,    37,    11,    76,    11,     0,    17,    18,    17,     7,
-      17,    18,     9,     7,    50,    11,     9,    13,    15,     8,
-      56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-      66,   104,    68,    31,   107,    71,    47,    31,    14,    75,
-      15,    77,    78,     7,     8,     9,    10,    76,    14,    13,
-      12,     7,     8,     9,    10,     7,     8,    13,     7,     8,
-       9,    13,    30,    31,    13,    94,    11,    13,    32,    13,
-      13,    35,    30,    34,    16,   104,    32,    12,   107,    35,
-      14,     7,    14,    32,    19,    20,    35,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    14,     3,     4,
-       5,     6,    19,    20,    26,    22,    23,    24,    25,    26,
-      27,    28,    29,    30,    31,    14,    -1,    72,    -1,    -1,
+      29,    36,    30,    31,    11,    77,    11,     0,    17,    18,
+      17,     7,    17,    18,     9,    50,     7,    11,     8,    13,
+      29,    13,    57,    58,    59,    60,    61,    62,    63,    64,
+      65,    66,    67,   105,    69,    31,   108,    72,    47,     9,
+      31,    76,    14,    78,    79,    15,    15,    12,    77,     7,
+       8,     9,    10,     7,     8,    13,     7,     8,     9,    13,
+      34,    14,    13,    11,    13,     7,    95,    26,    27,    28,
+      29,    30,    31,    16,    32,    12,   105,    35,    14,   108,
+      13,    32,    19,    20,    35,    22,    23,    24,    25,    26,
+      27,    28,    29,    30,    31,    14,     3,     4,     5,     6,
+      19,    20,    14,    22,    23,    24,    25,    26,    27,    28,
+      29,    30,    31,    14,    30,    26,    73,    -1,    19,    20,
+      -1,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    14,    -1,    -1,    -1,    -1,    19,    20,    -1,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    15,
+      -1,    -1,    -1,    19,    20,    -1,    22,    23,    24,    25,
+      26,    27,    28,    29,    30,    31,    15,    -1,    -1,    -1,
       19,    20,    -1,    22,    23,    24,    25,    26,    27,    28,
-      29,    30,    31,    14,    -1,    -1,    -1,    -1,    19,    20,
+      29,    30,    31,    16,    -1,    -1,    19,    20,    -1,    22,
+      23,    24,    25,    26,    27,    28,    29,    30,    31,    20,
       -1,    22,    23,    24,    25,    26,    27,    28,    29,    30,
-      31,    15,    -1,    -1,    -1,    19,    20,    -1,    22,    23,
-      24,    25,    26,    27,    28,    29,    30,    31,    15,    -1,
-      -1,    -1,    19,    20,    -1,    22,    23,    24,    25,    26,
-      27,    28,    29,    30,    31,    16,    -1,    -1,    19,    20,
-      -1,    22,    23,    24,    25,    26,    27,    28,    29,    30,
-      31,    20,    -1,    22,    23,    24,    25,    26,    27,    28,
-      29,    30,    31,    22,    23,    24,    25,    26,    27,    28,
-      29,    30,    31,    22,    23,    24,    25,    26,    27,    28,
-      29,    30,    31,    23,    24,    25,    26,    27,    28,    29,
-      30,    31,    24,    25,    26,    27,    28,    29,    30,    31,
-       3,     4,     5,     6,    -1,    -1,    -1,    10,    25,    26,
-      27,    28,    29,    30,    31,    26,    27,    28,    29,    30,
+      31,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    22,    23,    24,    25,    26,    27,    28,    29,    30,
+      31,    23,    24,    25,    26,    27,    28,    29,    30,    31,
+      24,    25,    26,    27,    28,    29,    30,    31,     3,     4,
+       5,     6,    -1,    -1,    -1,    10,     3,     4,     5,     6,
+      -1,    -1,    -1,    10,    25,    26,    27,    28,    29,    30,
       31,    27,    28,    29,    30,    31
 };
 
@@ -749,14 +759,14 @@ static const yytype_uint8 yystos[] =
        0,    37,    38,     0,     3,     4,     5,     6,    39,    41,
       45,    46,     9,     9,    15,     7,    31,    47,    40,    11,
       13,    44,    38,    38,     8,    42,    43,    15,    10,    48,
-      12,    14,    45,     7,     8,     9,    10,    13,    32,    35,
+      12,    14,    45,     7,     8,     9,    13,    32,    35,    38,
       49,    54,    56,    61,    44,     7,    13,    50,    56,    61,
-      13,    52,    34,    15,    19,    20,    22,    23,    24,    25,
-      26,    27,    28,    29,    30,    31,    11,    17,    18,    16,
-      59,    60,    38,    14,    56,    13,    51,    57,    58,    56,
+      13,    52,    10,    34,    15,    19,    20,    22,    23,    24,
+      25,    26,    27,    28,    29,    30,    31,    11,    17,    18,
+      16,    59,    60,    38,    14,    56,    13,    51,    57,    58,
       56,    56,    56,    56,    56,    56,    56,    56,    56,    56,
-       7,    56,    14,    56,    48,    14,    56,    49,    56,    56,
-      12,    15,    16,    10,    55,    14,    49,    53,    49
+      56,     7,    56,    14,    56,    48,    14,    56,    49,    56,
+      56,    12,    15,    16,    10,    55,    14,    49,    53,    49
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1558,14 +1568,17 @@ yyreduce:
     {
         case 5:
 /* Line 1792 of yacc.c  */
-#line 111 "parser.y"
+#line 125 "parser.y"
     {
+
     // Get top symbol table
     SymbolTable *symbol_table = environment.back();
+
     // Create new symbol
     Symbol *symbol = new Symbol((yyvsp[(2) - (4)].name));
     symbol->type = (yyvsp[(1) - (4)].type);
     symbol->index = symbol_table->size();
+
     // Process indices
     for (int index : *(yyvsp[(3) - (4)].indices))
     {
@@ -1575,6 +1588,7 @@ yyreduce:
         type->lltype = llvm::ArrayType::get(symbol->type->lltype, index);
         symbol->type = type;
     }
+
     // Symbol in global scope
     if (symbol_table->getScope() == SymbolTable::ScopeGlobal)
         symbol->lladdress = new llvm::GlobalVariable(
@@ -1584,10 +1598,12 @@ yyreduce:
                 llvm::GlobalValue::ExternalLinkage,
                 nullptr,
                 symbol->getName());
+
     // Symbol in local scope
     else if (symbol_table->getScope() == SymbolTable::ScopeLocal)
         symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
                 nullptr, Symbol::getTemp());
+
     // Insert in symbol table
     symbol_table->addSymbol(symbol);
 }
@@ -1595,19 +1611,23 @@ yyreduce:
 
   case 6:
 /* Line 1792 of yacc.c  */
-#line 144 "parser.y"
+#line 165 "parser.y"
     {
     // Push new local symbol table
     SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal);
     environment.push_back(symbol_table);
+
     // Current LLVM function
     function = llvm::cast<llvm::Function>((yyvsp[(1) - (2)].symbol)->lladdress);
+    function->dump();
+
     // Create entry basic block
     basic_block = llvm::BasicBlock::Create(
             llvm::getGlobalContext(),
             Symbol::getBasicBlock(),
             function);
     builder->SetInsertPoint(basic_block);
+
     // Add arguments to the stack
     int index = 0;
     for (llvm::Function::arg_iterator it = function->arg_begin(),
@@ -1615,29 +1635,36 @@ yyreduce:
             it != end;
             ++it)
     {
+
         // Name argument
         Symbol *argument = (*(yyvsp[(1) - (2)].symbol)->type->arguments)[index++];
         it->setName(argument->getName());
+
         // Create local symbol
         Symbol *symbol = new Symbol(argument->getName());
         symbol->type = argument->type;
         symbol_table->addSymbol(symbol);
+
         // Emit 'alloca' instruction
         symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
                 nullptr, Symbol::getTemp());
+
         // Emit 'store' instruction
         builder->CreateStore(it, symbol->lladdress);
     }
+
 }
     break;
 
   case 7:
 /* Line 1792 of yacc.c  */
-#line 178 "parser.y"
+#line 209 "parser.y"
     {
+
     // Return statement, if not present
     if (!basic_block->getTerminator())
         builder->CreateRetVoid();
+
     // Pop local symbol table
     SymbolTable *symbol_table = environment.back();
     environment.pop_back();
@@ -1646,19 +1673,25 @@ yyreduce:
 
   case 9:
 /* Line 1792 of yacc.c  */
-#line 189 "parser.y"
+#line 223 "parser.y"
     {
+
+    std::cerr << "Generating llvm for function declaration: " << (yyvsp[(2) - (5)].name) << "\n";
+
     // Create type
     Type *type = new Type(Type::KindFunction);
     type->rettype = (yyvsp[(1) - (5)].type);
     type->arguments = (yyvsp[(4) - (5)].formal_arguments);
+
     // Create symbol
     Symbol *symbol = new Symbol((yyvsp[(2) - (5)].name));
     symbol->type = type;
     (yyval.symbol) = symbol;
+
     // Add to global symbol table
     SymbolTable *symbol_table = environment.front();
     symbol_table->addSymbol(symbol);
+
     // Create function type
     std::vector<llvm::Type *> types;
     for (Symbol *symbol : *(yyvsp[(4) - (5)].formal_arguments))
@@ -1667,6 +1700,7 @@ yyreduce:
             (yyvsp[(1) - (5)].type)->lltype,
             types,
             false);
+
     // Insert function
     symbol->lladdress = module->getOrInsertFunction((yyvsp[(2) - (5)].name),
             function_type);
@@ -1675,7 +1709,7 @@ yyreduce:
 
   case 10:
 /* Line 1792 of yacc.c  */
-#line 214 "parser.y"
+#line 256 "parser.y"
     {
     (yyval.formal_arguments) = new std::vector<Symbol *>();
 }
@@ -1683,7 +1717,7 @@ yyreduce:
 
   case 11:
 /* Line 1792 of yacc.c  */
-#line 218 "parser.y"
+#line 261 "parser.y"
     {
     Symbol *symbol = new Symbol((yyvsp[(3) - (3)].name));
     symbol->type = (yyvsp[(2) - (3)].type);
@@ -1694,7 +1728,7 @@ yyreduce:
 
   case 12:
 /* Line 1792 of yacc.c  */
-#line 225 "parser.y"
+#line 269 "parser.y"
     {
     (yyval.formal_arguments) = new std::vector<Symbol *>();
 }
@@ -1702,7 +1736,7 @@ yyreduce:
 
   case 13:
 /* Line 1792 of yacc.c  */
-#line 229 "parser.y"
+#line 274 "parser.y"
     {
     Symbol *symbol = new Symbol((yyvsp[(3) - (4)].name));
     symbol->type = (yyvsp[(2) - (4)].type);
@@ -1713,7 +1747,7 @@ yyreduce:
 
   case 14:
 /* Line 1792 of yacc.c  */
-#line 236 "parser.y"
+#line 282 "parser.y"
     {
     (yyval.indices) = new std::list<int>();
 }
@@ -1721,7 +1755,7 @@ yyreduce:
 
   case 15:
 /* Line 1792 of yacc.c  */
-#line 240 "parser.y"
+#line 287 "parser.y"
     {
     (yyval.indices) = (yyvsp[(4) - (4)].indices);
     (yyval.indices)->push_back((yyvsp[(2) - (4)].value));
@@ -1730,7 +1764,7 @@ yyreduce:
 
   case 16:
 /* Line 1792 of yacc.c  */
-#line 246 "parser.y"
+#line 294 "parser.y"
     {
     (yyval.type) = (yyvsp[(1) - (1)].type);
 }
@@ -1738,7 +1772,7 @@ yyreduce:
 
   case 17:
 /* Line 1792 of yacc.c  */
-#line 250 "parser.y"
+#line 299 "parser.y"
     {
     (yyval.type) = new Type(Type::KindPointer);
     (yyval.type)->subtype = (yyvsp[(1) - (2)].type);
@@ -1748,7 +1782,7 @@ yyreduce:
 
   case 18:
 /* Line 1792 of yacc.c  */
-#line 257 "parser.y"
+#line 307 "parser.y"
     {
     (yyval.type) = new Type(Type::KindInt);
     (yyval.type)->lltype = llvm::Type::getInt32Ty(llvm::getGlobalContext());
@@ -1757,7 +1791,7 @@ yyreduce:
 
   case 19:
 /* Line 1792 of yacc.c  */
-#line 262 "parser.y"
+#line 313 "parser.y"
     {
     (yyval.type) = new Type(Type::KindFloat);
     (yyval.type)->lltype = llvm::Type::getFloatTy(llvm::getGlobalContext());
@@ -1766,7 +1800,7 @@ yyreduce:
 
   case 20:
 /* Line 1792 of yacc.c  */
-#line 267 "parser.y"
+#line 319 "parser.y"
     {
     (yyval.type) = new Type(Type::KindVoid);
     (yyval.type)->lltype = llvm::Type::getVoidTy(llvm::getGlobalContext());
@@ -1775,11 +1809,13 @@ yyreduce:
 
   case 21:
 /* Line 1792 of yacc.c  */
-#line 272 "parser.y"
+#line 325 "parser.y"
     {
+
     // Push new symbol table to environment
     SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeStruct);
     environment.push_back(symbol_table);
+
     // Create type
     (yyval.type) = new Type(Type::KindStruct);
     (yyval.type)->symbol_table = symbol_table;
@@ -1788,15 +1824,18 @@ yyreduce:
 
   case 22:
 /* Line 1792 of yacc.c  */
-#line 281 "parser.y"
+#line 337 "parser.y"
     {
+
     // Forward type
     (yyval.type) = (yyvsp[(3) - (5)].type);
+
     // LLVM structure
     SymbolTable *symbol_table = environment.back();
     std::vector<llvm::Type *> lltypes;
     symbol_table->getLLVMTypes(lltypes);
     (yyval.type)->lltype = llvm::StructType::create(llvm::getGlobalContext(), lltypes);
+
     // Pop symbol table from environment
     environment.pop_back();
 }
@@ -1804,7 +1843,7 @@ yyreduce:
 
   case 26:
 /* Line 1792 of yacc.c  */
-#line 297 "parser.y"
+#line 357 "parser.y"
     {
     llvm::Value *lladdress = (yyvsp[(1) - (4)].lvalue).llindices->size() > 1 ?
         builder->CreateGEP((yyvsp[(1) - (4)].lvalue).lladdress, *(yyvsp[(1) - (4)].lvalue).llindices,
@@ -1816,8 +1855,9 @@ yyreduce:
 
   case 27:
 /* Line 1792 of yacc.c  */
-#line 305 "parser.y"
+#line 366 "parser.y"
     {
+
     // Push new local symbol table
     SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal);
     environment.push_back(symbol_table);
@@ -1826,8 +1866,9 @@ yyreduce:
 
   case 28:
 /* Line 1792 of yacc.c  */
-#line 311 "parser.y"
+#line 374 "parser.y"
     {
+
     // Pop symbol table
     environment.pop_back();
 }
@@ -1835,10 +1876,12 @@ yyreduce:
 
   case 29:
 /* Line 1792 of yacc.c  */
-#line 316 "parser.y"
+#line 381 "parser.y"
     {
+
     // Emit unconditional to 'end' basic block
     builder->CreateBr((yyvsp[(1) - (1)].if_statement).end_basic_block);
+
     // Move to 'end' basic block
     basic_block = (yyvsp[(1) - (1)].if_statement).end_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1847,8 +1890,9 @@ yyreduce:
 
   case 30:
 /* Line 1792 of yacc.c  */
-#line 324 "parser.y"
+#line 392 "parser.y"
     {
+
     // Create separate 'else' and 'end' basic blocks
     (yyval.if_statement).then_basic_block = (yyvsp[(1) - (2)].if_statement).then_basic_block;
     (yyval.if_statement).else_basic_block = (yyvsp[(1) - (2)].if_statement).else_basic_block;
@@ -1856,8 +1900,10 @@ yyreduce:
             llvm::getGlobalContext(),
             Symbol::getBasicBlock(),
             function);
+
     // Emit unconditional branch to 'end' basic block
     builder->CreateBr((yyval.if_statement).end_basic_block);
+
     // Move to 'else' basic block
     basic_block = (yyval.if_statement).else_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1866,10 +1912,12 @@ yyreduce:
 
   case 31:
 /* Line 1792 of yacc.c  */
-#line 339 "parser.y"
+#line 411 "parser.y"
     {
+
     // Emit unconditional branch to 'end' basic block
     builder->CreateBr((yyvsp[(3) - (4)].if_statement).end_basic_block);
+
     // Move to 'end' basic block
     basic_block = (yyvsp[(3) - (4)].if_statement).end_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1878,8 +1926,9 @@ yyreduce:
 
   case 32:
 /* Line 1792 of yacc.c  */
-#line 347 "parser.y"
+#line 422 "parser.y"
     {
+
     // Create 'cond', 'body', and 'end' basic blocks
     (yyval.while_statement).cond_basic_block = llvm::BasicBlock::Create(
             llvm::getGlobalContext(),
@@ -1893,8 +1942,10 @@ yyreduce:
             llvm::getGlobalContext(),
             Symbol::getBasicBlock(),
             function);
+
     // Emit unconditional branch
     builder->CreateBr((yyval.while_statement).cond_basic_block);
+
     // Continue in 'cond' basic block
     basic_block = (yyval.while_statement).cond_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1903,12 +1954,14 @@ yyreduce:
 
   case 33:
 /* Line 1792 of yacc.c  */
-#line 368 "parser.y"
+#line 447 "parser.y"
     {
+
     // Emit conditional branch
     builder->CreateCondBr((yyvsp[(4) - (5)].llvalue),
             (yyvsp[(2) - (5)].while_statement).body_basic_block,
             (yyvsp[(2) - (5)].while_statement).end_basic_block);
+
     // Continue in 'body' basic block
     basic_block = (yyvsp[(2) - (5)].while_statement).body_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1917,10 +1970,12 @@ yyreduce:
 
   case 34:
 /* Line 1792 of yacc.c  */
-#line 378 "parser.y"
+#line 460 "parser.y"
     {
+
     // Emit unconditional branch
     builder->CreateBr((yyvsp[(2) - (7)].while_statement).cond_basic_block);
+
     // Continue in 'end' basic block
     basic_block = (yyvsp[(2) - (7)].while_statement).end_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1929,8 +1984,9 @@ yyreduce:
 
   case 35:
 /* Line 1792 of yacc.c  */
-#line 387 "parser.y"
+#line 472 "parser.y"
     {
+
     // Create 'if' and 'else' basic blocks, assume 'end' is same as 'else'.
     (yyval.if_statement).then_basic_block = llvm::BasicBlock::Create(
             llvm::getGlobalContext(),
@@ -1941,10 +1997,12 @@ yyreduce:
             Symbol::getBasicBlock(),
             function);
     (yyval.if_statement).end_basic_block = (yyval.if_statement).else_basic_block;
+
     // Emit conditional branch
     builder->CreateCondBr((yyvsp[(3) - (4)].llvalue),
             (yyval.if_statement).then_basic_block,
             (yyval.if_statement).else_basic_block);
+
     // Continue in 'then' basic block
     basic_block = (yyval.if_statement).then_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -1953,7 +2011,7 @@ yyreduce:
 
   case 36:
 /* Line 1792 of yacc.c  */
-#line 407 "parser.y"
+#line 496 "parser.y"
     {
     (yyval.if_statement).then_basic_block = (yyvsp[(5) - (6)].if_statement).then_basic_block;
     (yyval.if_statement).else_basic_block = (yyvsp[(5) - (6)].if_statement).else_basic_block;
@@ -1963,7 +2021,7 @@ yyreduce:
 
   case 37:
 /* Line 1792 of yacc.c  */
-#line 414 "parser.y"
+#line 504 "parser.y"
     {
     llvm::Value *lladdress = (yyvsp[(1) - (1)].lvalue).llindices->size() > 1 ?
         builder->CreateGEP((yyvsp[(1) - (1)].lvalue).lladdress, *(yyvsp[(1) - (1)].lvalue).llindices,
@@ -1975,7 +2033,7 @@ yyreduce:
 
   case 38:
 /* Line 1792 of yacc.c  */
-#line 422 "parser.y"
+#line 513 "parser.y"
     {
     llvm::Type *lltype = llvm::Type::getInt32Ty(llvm::getGlobalContext());
     (yyval.llvalue) = llvm::ConstantInt::get(lltype, (yyvsp[(1) - (1)].value));
@@ -1984,7 +2042,7 @@ yyreduce:
 
   case 39:
 /* Line 1792 of yacc.c  */
-#line 427 "parser.y"
+#line 519 "parser.y"
     {
     (yyval.llvalue) = builder->CreateBinOp(llvm::Instruction::Add, (yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue),
             Symbol::getTemp());
@@ -1993,7 +2051,7 @@ yyreduce:
 
   case 40:
 /* Line 1792 of yacc.c  */
-#line 432 "parser.y"
+#line 525 "parser.y"
     {
     (yyval.llvalue) = builder->CreateBinOp(llvm::Instruction::Sub, (yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue),
             Symbol::getTemp());
@@ -2002,7 +2060,7 @@ yyreduce:
 
   case 41:
 /* Line 1792 of yacc.c  */
-#line 437 "parser.y"
+#line 531 "parser.y"
     {
     (yyval.llvalue) = builder->CreateBinOp(llvm::Instruction::Mul, (yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue),
             Symbol::getTemp());
@@ -2011,7 +2069,7 @@ yyreduce:
 
   case 42:
 /* Line 1792 of yacc.c  */
-#line 442 "parser.y"
+#line 537 "parser.y"
     {
     (yyval.llvalue) = builder->CreateBinOp(llvm::Instruction::SDiv, (yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue),
             Symbol::getTemp());
@@ -2020,7 +2078,7 @@ yyreduce:
 
   case 43:
 /* Line 1792 of yacc.c  */
-#line 447 "parser.y"
+#line 543 "parser.y"
     {
     (yyval.llvalue) = (yyvsp[(2) - (3)].llvalue);
 }
@@ -2028,7 +2086,7 @@ yyreduce:
 
   case 44:
 /* Line 1792 of yacc.c  */
-#line 451 "parser.y"
+#line 548 "parser.y"
     {
     (yyval.llvalue) = builder->CreateICmpSGT((yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue), Symbol::getTemp());
 }
@@ -2036,7 +2094,7 @@ yyreduce:
 
   case 45:
 /* Line 1792 of yacc.c  */
-#line 455 "parser.y"
+#line 553 "parser.y"
     {
     (yyval.llvalue) = builder->CreateICmpSLT((yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue), Symbol::getTemp());
 }
@@ -2044,7 +2102,7 @@ yyreduce:
 
   case 46:
 /* Line 1792 of yacc.c  */
-#line 459 "parser.y"
+#line 558 "parser.y"
     {
     (yyval.llvalue) = builder->CreateICmpSGE((yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue), Symbol::getTemp());
 }
@@ -2052,7 +2110,7 @@ yyreduce:
 
   case 47:
 /* Line 1792 of yacc.c  */
-#line 463 "parser.y"
+#line 563 "parser.y"
     {
     (yyval.llvalue) = builder->CreateICmpSLE((yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue), Symbol::getTemp());
 }
@@ -2060,7 +2118,7 @@ yyreduce:
 
   case 48:
 /* Line 1792 of yacc.c  */
-#line 467 "parser.y"
+#line 568 "parser.y"
     {
     (yyval.llvalue) = builder->CreateICmpEQ((yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue), Symbol::getTemp());
 }
@@ -2068,7 +2126,7 @@ yyreduce:
 
   case 49:
 /* Line 1792 of yacc.c  */
-#line 471 "parser.y"
+#line 573 "parser.y"
     {
     (yyval.llvalue) = builder->CreateICmpNE((yyvsp[(1) - (3)].llvalue), (yyvsp[(3) - (3)].llvalue), Symbol::getTemp());
 }
@@ -2076,10 +2134,12 @@ yyreduce:
 
   case 50:
 /* Line 1792 of yacc.c  */
-#line 475 "parser.y"
+#line 578 "parser.y"
     {
+
     // Save current basic block
     (yyval.logical).lhs_basic_block = basic_block;
+
     // Create RHS and end basic blocks
     (yyval.logical).rhs_basic_block = llvm::BasicBlock::Create(
             llvm::getGlobalContext(),
@@ -2089,10 +2149,12 @@ yyreduce:
             llvm::getGlobalContext(),
             Symbol::getBasicBlock(),
             function);
+
     // Emit conditional branch
     builder->CreateCondBr((yyvsp[(1) - (2)].llvalue),
             (yyval.logical).end_basic_block,
             (yyval.logical).rhs_basic_block);
+
     // Set current basic block to RHS
     basic_block = (yyval.logical).rhs_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -2101,13 +2163,16 @@ yyreduce:
 
   case 51:
 /* Line 1792 of yacc.c  */
-#line 496 "parser.y"
+#line 604 "parser.y"
     {
+
     // Emit unconditional branch
     builder->CreateBr((yyvsp[(3) - (4)].logical).end_basic_block);
+
     // Move to end basic block
     basic_block = (yyvsp[(3) - (4)].logical).end_basic_block;
     builder->SetInsertPoint(basic_block);
+
     // Emit phi instruction
     llvm::PHINode *phi = builder->CreatePHI(
             llvm::IntegerType::getInt1Ty(llvm::getGlobalContext()),
@@ -2120,10 +2185,12 @@ yyreduce:
 
   case 52:
 /* Line 1792 of yacc.c  */
-#line 511 "parser.y"
+#line 623 "parser.y"
     {
+
     // Save current basic block
     (yyval.logical).lhs_basic_block = basic_block;
+
     // Create RHS and end basic blocks
     (yyval.logical).rhs_basic_block = llvm::BasicBlock::Create(
             llvm::getGlobalContext(),
@@ -2133,10 +2200,12 @@ yyreduce:
             llvm::getGlobalContext(),
             Symbol::getBasicBlock(),
             function);
+
     // Emit conditional branch
     builder->CreateCondBr((yyvsp[(1) - (2)].llvalue),
             (yyval.logical).rhs_basic_block,
             (yyval.logical).end_basic_block);
+
     // Set current basic block to RHS
     basic_block = (yyval.logical).rhs_basic_block;
     builder->SetInsertPoint(basic_block);
@@ -2145,13 +2214,16 @@ yyreduce:
 
   case 53:
 /* Line 1792 of yacc.c  */
-#line 532 "parser.y"
+#line 649 "parser.y"
     {
+
     // Emit unconditional branch
     builder->CreateBr((yyvsp[(3) - (4)].logical).end_basic_block);
+
     // Move to end basic block
     basic_block = (yyvsp[(3) - (4)].logical).end_basic_block;
     builder->SetInsertPoint(basic_block);
+
     // Emit phi instruction
     llvm::PHINode *phi = builder->CreatePHI(
             llvm::IntegerType::getInt1Ty(llvm::getGlobalContext()),
@@ -2164,17 +2236,20 @@ yyreduce:
 
   case 54:
 /* Line 1792 of yacc.c  */
-#line 547 "parser.y"
+#line 668 "parser.y"
     {
+
     // Search function in global scope
     SymbolTable *symbol_table = environment.front();
     Symbol *symbol = symbol_table->getSymbol((yyvsp[(1) - (4)].name));
+
     // Undeclared, or not a function
     if (!symbol || symbol->type->getKind() != Type::KindFunction)
     {
         std::cerr << "Identifier is not a function: " << (yyvsp[(1) - (4)].name) << '\n';
         exit(1);
     }
+
     // Invoke
     (yyval.llvalue) = builder->CreateCall(symbol->lladdress,
             *(yyvsp[(3) - (4)].actual_arguments),
@@ -2185,7 +2260,7 @@ yyreduce:
 
   case 55:
 /* Line 1792 of yacc.c  */
-#line 564 "parser.y"
+#line 689 "parser.y"
     {
     (yyval.actual_arguments) = new std::vector<llvm::Value *>();
 }
@@ -2193,7 +2268,7 @@ yyreduce:
 
   case 56:
 /* Line 1792 of yacc.c  */
-#line 568 "parser.y"
+#line 694 "parser.y"
     {
     (yyval.actual_arguments) = (yyvsp[(1) - (2)].actual_arguments);
     (yyval.actual_arguments)->push_back((yyvsp[(2) - (2)].llvalue));
@@ -2202,7 +2277,7 @@ yyreduce:
 
   case 57:
 /* Line 1792 of yacc.c  */
-#line 573 "parser.y"
+#line 700 "parser.y"
     {
     (yyval.actual_arguments) = new std::vector<llvm::Value *>();
 }
@@ -2210,7 +2285,7 @@ yyreduce:
 
   case 58:
 /* Line 1792 of yacc.c  */
-#line 577 "parser.y"
+#line 705 "parser.y"
     {
     (yyval.actual_arguments) = (yyvsp[(1) - (3)].actual_arguments);
     (yyval.actual_arguments)->push_back((yyvsp[(2) - (3)].llvalue));
@@ -2219,8 +2294,9 @@ yyreduce:
 
   case 59:
 /* Line 1792 of yacc.c  */
-#line 583 "parser.y"
+#line 712 "parser.y"
     {
+
     // Search symbol in environment, from the top to the bottom
     Symbol *symbol = nullptr;
     for (auto it = environment.rbegin();
@@ -2232,16 +2308,19 @@ yyreduce:
         if (symbol)
             break;
     }
+
     // Undeclared
     if (!symbol)
     {
         std::cerr << "Undeclared identifier: " << (yyvsp[(1) - (1)].name) << '\n';
         exit(1);
     }
+
     // Save info
     (yyval.lvalue).type = symbol->type;
     (yyval.lvalue).lladdress = symbol->lladdress;
     (yyval.lvalue).llindices = new std::vector<llvm::Value *>();
+
     // Add initial index set to 0
     llvm::Type *lltype = llvm::Type::getInt32Ty(llvm::getGlobalContext());
     llvm::Value *llindex = llvm::ConstantInt::get(lltype, 0);
@@ -2251,17 +2330,20 @@ yyreduce:
 
   case 60:
 /* Line 1792 of yacc.c  */
-#line 611 "parser.y"
+#line 745 "parser.y"
     {
+
     // Check that L-value is array
     if ((yyvsp[(1) - (4)].lvalue).type->getKind() != Type::KindArray)
     {
         std::cerr << "L-value is not an array\n";
         exit(1);
     }
+
     // Add index
     (yyval.lvalue).llindices = (yyvsp[(1) - (4)].lvalue).llindices;
     (yyval.lvalue).llindices->push_back((yyvsp[(3) - (4)].llvalue));
+
     // Type and address
     (yyval.lvalue).type = (yyvsp[(1) - (4)].lvalue).type->subtype;
     (yyval.lvalue).lladdress = (yyvsp[(1) - (4)].lvalue).lladdress;
@@ -2270,14 +2352,16 @@ yyreduce:
 
   case 61:
 /* Line 1792 of yacc.c  */
-#line 626 "parser.y"
+#line 764 "parser.y"
     {
+
     // Check that L-value is a structure
     if ((yyvsp[(1) - (3)].lvalue).type->getKind() != Type::KindStruct)
     {
         std::cerr << "L-value is not a struct\n";
         exit(1);
     }
+
     // Find symbol in structure
     Symbol *symbol = (yyvsp[(1) - (3)].lvalue).type->symbol_table->getSymbol((yyvsp[(3) - (3)].name));
     if (!symbol)
@@ -2285,11 +2369,13 @@ yyreduce:
         std::cerr << "Invalid field: " << (yyvsp[(3) - (3)].name) << '\n';
         exit(1);
     }
+
     // Add index
     llvm::Type *lltype = llvm::Type::getInt32Ty(llvm::getGlobalContext());
     llvm::Value *llindex = llvm::ConstantInt::get(lltype, symbol->index);
     (yyval.lvalue).llindices = (yyvsp[(1) - (3)].lvalue).llindices;
     (yyval.lvalue).llindices->push_back(llindex);
+
     // Type and address
     (yyval.lvalue).type = symbol->type;
     (yyval.lvalue).lladdress = (yyvsp[(1) - (3)].lvalue).lladdress;
@@ -2298,7 +2384,7 @@ yyreduce:
 
 
 /* Line 1792 of yacc.c  */
-#line 2302 "parser.c"
+#line 2388 "parser.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2530,16 +2616,18 @@ yyreturn:
 
 
 /* Line 2055 of yacc.c  */
-#line 649 "parser.y"
+#line 792 "parser.y"
 
 int main(int argc, char **argv)
 {
+
     // Syntax
     if (argc != 2)
     {
         std::cerr << "Syntax: ./main <file>\n";
         exit(1);
     }
+
     // Open file in 'yyin'
     yyin = fopen(argv[1], "r");
     if (!yyin)
@@ -2547,24 +2635,32 @@ int main(int argc, char **argv)
         std::cerr << "Cannot open file\n";
         exit(1);
     }
+
     // LLVM context, builder, and module
     llvm::LLVMContext &context = llvm::getGlobalContext();
     builder = new llvm::IRBuilder<>(context);
     module = new llvm::Module("TestModule", context);
+
     // Push global symbol table to environment
     SymbolTable *global_symbol_table = new SymbolTable(SymbolTable::ScopeGlobal);
     environment.push_back(global_symbol_table);
+
     // Parse input until there is no more
     do
     {
         yyparse();
     } while (!feof(yyin));
+
     // Dump module
     module->dump();
     return 0;
 }
+
 void yyerror(const char *s)
 {
+    environment.back()->dump();
     std::cerr << s << std::endl;
     exit(1);
 }
+
+

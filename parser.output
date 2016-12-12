@@ -3,6 +3,9 @@ Terminals unused in grammar
    TokenLogicalNot
 
 
+State 23 conflicts: 4 shift/reduce
+
+
 Grammar
 
     0 $accept: Start $end
@@ -16,7 +19,7 @@ Grammar
 
     5 $@1: /* empty */
 
-    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements TokenCloseCurly
+    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements Declarations TokenCloseCurly
     7            | FunctionDeclaration TokenSemicolon
 
     8 FunctionDeclaration: Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
@@ -275,7 +278,7 @@ State 8
 
 State 9
 
-    6 Declaration: FunctionDeclaration . TokenOpenCurly $@1 Declarations Statements TokenCloseCurly
+    6 Declaration: FunctionDeclaration . TokenOpenCurly $@1 Declarations Statements Declarations TokenCloseCurly
     7            | FunctionDeclaration . TokenSemicolon
 
     TokenOpenCurly  shift, and go to state 13
@@ -310,7 +313,7 @@ State 12
 
 State 13
 
-    6 Declaration: FunctionDeclaration TokenOpenCurly . $@1 Declarations Statements TokenCloseCurly
+    6 Declaration: FunctionDeclaration TokenOpenCurly . $@1 Declarations Statements Declarations TokenCloseCurly
 
     $default  reduce using rule 5 ($@1)
 
@@ -355,7 +358,7 @@ State 17
 
 State 18
 
-    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 . Declarations Statements TokenCloseCurly
+    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 . Declarations Statements Declarations TokenCloseCurly
 
     $default  reduce using rule 2 (Declarations)
 
@@ -407,14 +410,18 @@ State 22
 State 23
 
     3 Declarations: Declarations . Declaration
-    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations . Statements TokenCloseCurly
+    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations . Statements Declarations TokenCloseCurly
 
     TokenInt     shift, and go to state 4
     TokenFloat   shift, and go to state 5
     TokenVoid    shift, and go to state 6
     TokenStruct  shift, and go to state 7
 
-    $default  reduce using rule 22 (Statements)
+    TokenInt     [reduce using rule 22 (Statements)]
+    TokenFloat   [reduce using rule 22 (Statements)]
+    TokenVoid    [reduce using rule 22 (Statements)]
+    TokenStruct  [reduce using rule 22 (Statements)]
+    $default     reduce using rule 22 (Statements)
 
     Declaration          go to state 8
     FunctionDeclaration  go to state 9
@@ -467,21 +474,23 @@ State 28
 
 State 29
 
-    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements . TokenCloseCurly
+    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements . Declarations TokenCloseCurly
    23 Statements: Statements . Statement
 
-    TokenId          shift, and go to state 33
-    TokenNumber      shift, and go to state 34
-    TokenOpenCurly   shift, and go to state 35
-    TokenCloseCurly  shift, and go to state 36
-    TokenOpenPar     shift, and go to state 37
-    TokenIf          shift, and go to state 38
-    TokenWhile       shift, and go to state 39
+    TokenId         shift, and go to state 33
+    TokenNumber     shift, and go to state 34
+    TokenOpenCurly  shift, and go to state 35
+    TokenOpenPar    shift, and go to state 36
+    TokenIf         shift, and go to state 37
+    TokenWhile      shift, and go to state 38
 
-    Statement    go to state 40
-    IfStatement  go to state 41
-    Expression   go to state 42
-    LValue       go to state 43
+    $default  reduce using rule 2 (Declarations)
+
+    Declarations  go to state 39
+    Statement     go to state 40
+    IfStatement   go to state 41
+    Expression    go to state 42
+    LValue        go to state 43
 
 
 State 30
@@ -540,37 +549,47 @@ State 35
 
 State 36
 
-    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements TokenCloseCurly .
-
-    $default  reduce using rule 6 (Declaration)
-
-
-State 37
-
    42 Expression: TokenOpenPar . Expression TokenClosePar
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 48
     LValue      go to state 49
 
 
-State 38
+State 37
 
    35 IfStatement: TokenIf . TokenOpenPar Expression TokenClosePar @7 Statement
 
     TokenOpenPar  shift, and go to state 50
 
 
-State 39
+State 38
 
    33 Statement: TokenWhile . @5 TokenOpenPar Expression TokenClosePar $@6 Statement
 
     $default  reduce using rule 31 (@5)
 
     @5  go to state 51
+
+
+State 39
+
+    3 Declarations: Declarations . Declaration
+    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements Declarations . TokenCloseCurly
+
+    TokenInt         shift, and go to state 4
+    TokenFloat       shift, and go to state 5
+    TokenVoid        shift, and go to state 6
+    TokenStruct      shift, and go to state 7
+    TokenCloseCurly  shift, and go to state 52
+
+    Declaration          go to state 8
+    FunctionDeclaration  go to state 9
+    Pointer              go to state 10
+    Type                 go to state 11
 
 
 State 40
@@ -585,7 +604,7 @@ State 41
    28 Statement: IfStatement .
    30          | IfStatement . TokenElse @4 Statement
 
-    TokenElse  shift, and go to state 52
+    TokenElse  shift, and go to state 53
 
     $default  reduce using rule 28 (Statement)
 
@@ -606,19 +625,19 @@ State 42
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenSemicolon     shift, and go to state 53
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenSemicolon     shift, and go to state 54
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
 
 State 43
@@ -628,9 +647,9 @@ State 43
    59 LValue: LValue . TokenOpenSquare Expression TokenCloseSquare
    60       | LValue . TokenPoint TokenId
 
-    TokenOpenSquare  shift, and go to state 66
-    TokenPoint       shift, and go to state 67
-    TokenEqual       shift, and go to state 68
+    TokenOpenSquare  shift, and go to state 67
+    TokenPoint       shift, and go to state 68
+    TokenEqual       shift, and go to state 69
 
     $default  reduce using rule 36 (Expression)
 
@@ -647,7 +666,7 @@ State 45
    10 FormalArguments: FormalArgumentsComma Pointer TokenId .
    12 FormalArgumentsComma: FormalArgumentsComma Pointer TokenId . TokenComma
 
-    TokenComma  shift, and go to state 69
+    TokenComma  shift, and go to state 70
 
     $default  reduce using rule 10 (FormalArguments)
 
@@ -659,8 +678,8 @@ State 46
     TokenClosePar  reduce using rule 54 (ActualArguments)
     $default       reduce using rule 56 (ActualArgumentsComma)
 
-    ActualArguments       go to state 70
-    ActualArgumentsComma  go to state 71
+    ActualArguments       go to state 71
+    ActualArgumentsComma  go to state 72
 
 
 State 47
@@ -669,7 +688,7 @@ State 47
 
     $default  reduce using rule 2 (Declarations)
 
-    Declarations  go to state 72
+    Declarations  go to state 73
 
 
 State 48
@@ -688,19 +707,19 @@ State 48
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenClosePar      shift, and go to state 73
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenClosePar      shift, and go to state 74
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
 
 State 49
@@ -709,8 +728,8 @@ State 49
    59 LValue: LValue . TokenOpenSquare Expression TokenCloseSquare
    60       | LValue . TokenPoint TokenId
 
-    TokenOpenSquare  shift, and go to state 66
-    TokenPoint       shift, and go to state 67
+    TokenOpenSquare  shift, and go to state 67
+    TokenPoint       shift, and go to state 68
 
     $default  reduce using rule 36 (Expression)
 
@@ -721,9 +740,9 @@ State 50
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
-    Expression  go to state 74
+    Expression  go to state 75
     LValue      go to state 49
 
 
@@ -731,62 +750,57 @@ State 51
 
    33 Statement: TokenWhile @5 . TokenOpenPar Expression TokenClosePar $@6 Statement
 
-    TokenOpenPar  shift, and go to state 75
+    TokenOpenPar  shift, and go to state 76
 
 
 State 52
+
+    6 Declaration: FunctionDeclaration TokenOpenCurly $@1 Declarations Statements Declarations TokenCloseCurly .
+
+    $default  reduce using rule 6 (Declaration)
+
+
+State 53
 
    30 Statement: IfStatement TokenElse . @4 Statement
 
     $default  reduce using rule 29 (@4)
 
-    @4  go to state 76
+    @4  go to state 77
 
 
-State 53
+State 54
 
    24 Statement: Expression TokenSemicolon .
 
     $default  reduce using rule 24 (Statement)
 
 
-State 54
+State 55
 
    50 Expression: Expression TokenLogicalOr . @8 Expression
 
     $default  reduce using rule 49 (@8)
 
-    @8  go to state 77
+    @8  go to state 78
 
 
-State 55
+State 56
 
    52 Expression: Expression TokenLogicalAnd . @9 Expression
 
     $default  reduce using rule 51 (@9)
 
-    @9  go to state 78
+    @9  go to state 79
 
 
-State 56
+State 57
 
    43 Expression: Expression TokenGreaterThan . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
-
-    Expression  go to state 79
-    LValue      go to state 49
-
-
-State 57
-
-   44 Expression: Expression TokenLessThan . Expression
-
-    TokenId       shift, and go to state 33
-    TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 80
     LValue      go to state 49
@@ -794,11 +808,11 @@ State 57
 
 State 58
 
-   45 Expression: Expression TokenGreaterEqual . Expression
+   44 Expression: Expression TokenLessThan . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 81
     LValue      go to state 49
@@ -806,11 +820,11 @@ State 58
 
 State 59
 
-   46 Expression: Expression TokenLessEqual . Expression
+   45 Expression: Expression TokenGreaterEqual . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 82
     LValue      go to state 49
@@ -818,11 +832,11 @@ State 59
 
 State 60
 
-   48 Expression: Expression TokenNotEqual . Expression
+   46 Expression: Expression TokenLessEqual . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 83
     LValue      go to state 49
@@ -830,11 +844,11 @@ State 60
 
 State 61
 
-   47 Expression: Expression TokenDoubleEqual . Expression
+   48 Expression: Expression TokenNotEqual . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 84
     LValue      go to state 49
@@ -842,11 +856,11 @@ State 61
 
 State 62
 
-   39 Expression: Expression TokenMinus . Expression
+   47 Expression: Expression TokenDoubleEqual . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 85
     LValue      go to state 49
@@ -854,11 +868,11 @@ State 62
 
 State 63
 
-   38 Expression: Expression TokenPlus . Expression
+   39 Expression: Expression TokenMinus . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 86
     LValue      go to state 49
@@ -866,11 +880,11 @@ State 63
 
 State 64
 
-   41 Expression: Expression TokenDiv . Expression
+   38 Expression: Expression TokenPlus . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 87
     LValue      go to state 49
@@ -878,11 +892,11 @@ State 64
 
 State 65
 
-   40 Expression: Expression TokenMult . Expression
+   41 Expression: Expression TokenDiv . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 88
     LValue      go to state 49
@@ -890,11 +904,11 @@ State 65
 
 State 66
 
-   59 LValue: LValue TokenOpenSquare . Expression TokenCloseSquare
+   40 Expression: Expression TokenMult . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 89
     LValue      go to state 49
@@ -902,51 +916,63 @@ State 66
 
 State 67
 
-   60 LValue: LValue TokenPoint . TokenId
+   59 LValue: LValue TokenOpenSquare . Expression TokenCloseSquare
 
-    TokenId  shift, and go to state 90
+    TokenId       shift, and go to state 33
+    TokenNumber   shift, and go to state 34
+    TokenOpenPar  shift, and go to state 36
+
+    Expression  go to state 90
+    LValue      go to state 49
 
 
 State 68
+
+   60 LValue: LValue TokenPoint . TokenId
+
+    TokenId  shift, and go to state 91
+
+
+State 69
 
    25 Statement: LValue TokenEqual . Expression TokenSemicolon
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
-    Expression  go to state 91
+    Expression  go to state 92
     LValue      go to state 49
 
 
-State 69
+State 70
 
    12 FormalArgumentsComma: FormalArgumentsComma Pointer TokenId TokenComma .
 
     $default  reduce using rule 12 (FormalArgumentsComma)
 
 
-State 70
+State 71
 
    53 Expression: TokenId TokenOpenPar ActualArguments . TokenClosePar
 
-    TokenClosePar  shift, and go to state 92
+    TokenClosePar  shift, and go to state 93
 
 
-State 71
+State 72
 
    55 ActualArguments: ActualArgumentsComma . Expression
    57 ActualArgumentsComma: ActualArgumentsComma . Expression TokenComma
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
-    Expression  go to state 93
+    Expression  go to state 94
     LValue      go to state 49
 
 
-State 72
+State 73
 
     3 Declarations: Declarations . Declaration
    27 Statement: TokenOpenCurly $@3 Declarations . Statements TokenCloseCurly
@@ -962,17 +988,17 @@ State 72
     FunctionDeclaration  go to state 9
     Pointer              go to state 10
     Type                 go to state 11
-    Statements           go to state 94
+    Statements           go to state 95
 
 
-State 73
+State 74
 
    42 Expression: TokenOpenPar Expression TokenClosePar .
 
     $default  reduce using rule 42 (Expression)
 
 
-State 74
+State 75
 
    35 IfStatement: TokenIf TokenOpenPar Expression . TokenClosePar @7 Statement
    38 Expression: Expression . TokenPlus Expression
@@ -988,75 +1014,75 @@ State 74
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenClosePar      shift, and go to state 95
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenClosePar      shift, and go to state 96
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
 
-State 75
+State 76
 
    33 Statement: TokenWhile @5 TokenOpenPar . Expression TokenClosePar $@6 Statement
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
-    Expression  go to state 96
+    Expression  go to state 97
     LValue      go to state 49
 
 
-State 76
+State 77
 
    30 Statement: IfStatement TokenElse @4 . Statement
 
     TokenId         shift, and go to state 33
     TokenNumber     shift, and go to state 34
     TokenOpenCurly  shift, and go to state 35
-    TokenOpenPar    shift, and go to state 37
-    TokenIf         shift, and go to state 38
-    TokenWhile      shift, and go to state 39
+    TokenOpenPar    shift, and go to state 36
+    TokenIf         shift, and go to state 37
+    TokenWhile      shift, and go to state 38
 
-    Statement    go to state 97
+    Statement    go to state 98
     IfStatement  go to state 41
     Expression   go to state 42
     LValue       go to state 43
 
 
-State 77
+State 78
 
    50 Expression: Expression TokenLogicalOr @8 . Expression
 
     TokenId       shift, and go to state 33
     TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
-
-    Expression  go to state 98
-    LValue      go to state 49
-
-
-State 78
-
-   52 Expression: Expression TokenLogicalAnd @9 . Expression
-
-    TokenId       shift, and go to state 33
-    TokenNumber   shift, and go to state 34
-    TokenOpenPar  shift, and go to state 37
+    TokenOpenPar  shift, and go to state 36
 
     Expression  go to state 99
     LValue      go to state 49
 
 
 State 79
+
+   52 Expression: Expression TokenLogicalAnd @9 . Expression
+
+    TokenId       shift, and go to state 33
+    TokenNumber   shift, and go to state 34
+    TokenOpenPar  shift, and go to state 36
+
+    Expression  go to state 100
+    LValue      go to state 49
+
+
+State 80
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1072,22 +1098,22 @@ State 79
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
     TokenGreaterThan  error (nonassociative)
 
     $default  reduce using rule 43 (Expression)
 
 
-State 80
+State 81
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1103,21 +1129,21 @@ State 80
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
     TokenLessThan  error (nonassociative)
 
     $default  reduce using rule 44 (Expression)
 
 
-State 81
+State 82
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1133,20 +1159,20 @@ State 81
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenLessEqual    shift, and go to state 59
-    TokenNotEqual     shift, and go to state 60
-    TokenDoubleEqual  shift, and go to state 61
-    TokenMinus        shift, and go to state 62
-    TokenPlus         shift, and go to state 63
-    TokenDiv          shift, and go to state 64
-    TokenMult         shift, and go to state 65
+    TokenLessEqual    shift, and go to state 60
+    TokenNotEqual     shift, and go to state 61
+    TokenDoubleEqual  shift, and go to state 62
+    TokenMinus        shift, and go to state 63
+    TokenPlus         shift, and go to state 64
+    TokenDiv          shift, and go to state 65
+    TokenMult         shift, and go to state 66
 
     TokenGreaterEqual  error (nonassociative)
 
     $default  reduce using rule 45 (Expression)
 
 
-State 82
+State 83
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1162,19 +1188,19 @@ State 82
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenNotEqual     shift, and go to state 60
-    TokenDoubleEqual  shift, and go to state 61
-    TokenMinus        shift, and go to state 62
-    TokenPlus         shift, and go to state 63
-    TokenDiv          shift, and go to state 64
-    TokenMult         shift, and go to state 65
+    TokenNotEqual     shift, and go to state 61
+    TokenDoubleEqual  shift, and go to state 62
+    TokenMinus        shift, and go to state 63
+    TokenPlus         shift, and go to state 64
+    TokenDiv          shift, and go to state 65
+    TokenMult         shift, and go to state 66
 
     TokenLessEqual  error (nonassociative)
 
     $default  reduce using rule 46 (Expression)
 
 
-State 83
+State 84
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1190,18 +1216,18 @@ State 83
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenDoubleEqual  shift, and go to state 61
-    TokenMinus        shift, and go to state 62
-    TokenPlus         shift, and go to state 63
-    TokenDiv          shift, and go to state 64
-    TokenMult         shift, and go to state 65
+    TokenDoubleEqual  shift, and go to state 62
+    TokenMinus        shift, and go to state 63
+    TokenPlus         shift, and go to state 64
+    TokenDiv          shift, and go to state 65
+    TokenMult         shift, and go to state 66
 
     TokenNotEqual  error (nonassociative)
 
     $default  reduce using rule 48 (Expression)
 
 
-State 84
+State 85
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1217,17 +1243,17 @@ State 84
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenMinus  shift, and go to state 62
-    TokenPlus   shift, and go to state 63
-    TokenDiv    shift, and go to state 64
-    TokenMult   shift, and go to state 65
+    TokenMinus  shift, and go to state 63
+    TokenPlus   shift, and go to state 64
+    TokenDiv    shift, and go to state 65
+    TokenMult   shift, and go to state 66
 
     TokenDoubleEqual  error (nonassociative)
 
     $default  reduce using rule 47 (Expression)
 
 
-State 85
+State 86
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1243,13 +1269,13 @@ State 85
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenDiv   shift, and go to state 64
-    TokenMult  shift, and go to state 65
+    TokenDiv   shift, and go to state 65
+    TokenMult  shift, and go to state 66
 
     $default  reduce using rule 39 (Expression)
 
 
-State 86
+State 87
 
    38 Expression: Expression . TokenPlus Expression
    38           | Expression TokenPlus Expression .
@@ -1265,13 +1291,13 @@ State 86
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenDiv   shift, and go to state 64
-    TokenMult  shift, and go to state 65
+    TokenDiv   shift, and go to state 65
+    TokenMult  shift, and go to state 66
 
     $default  reduce using rule 38 (Expression)
 
 
-State 87
+State 88
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1290,7 +1316,7 @@ State 87
     $default  reduce using rule 41 (Expression)
 
 
-State 88
+State 89
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1309,7 +1335,7 @@ State 88
     $default  reduce using rule 40 (Expression)
 
 
-State 89
+State 90
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1325,29 +1351,29 @@ State 89
    52           | Expression . TokenLogicalAnd @9 Expression
    59 LValue: LValue TokenOpenSquare Expression . TokenCloseSquare
 
-    TokenCloseSquare   shift, and go to state 100
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenCloseSquare   shift, and go to state 101
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
 
-State 90
+State 91
 
    60 LValue: LValue TokenPoint TokenId .
 
     $default  reduce using rule 60 (LValue)
 
 
-State 91
+State 92
 
    25 Statement: LValue TokenEqual Expression . TokenSemicolon
    38 Expression: Expression . TokenPlus Expression
@@ -1363,29 +1389,29 @@ State 91
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenSemicolon     shift, and go to state 101
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenSemicolon     shift, and go to state 102
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
 
-State 92
+State 93
 
    53 Expression: TokenId TokenOpenPar ActualArguments TokenClosePar .
 
     $default  reduce using rule 53 (Expression)
 
 
-State 93
+State 94
 
    38 Expression: Expression . TokenPlus Expression
    39           | Expression . TokenMinus Expression
@@ -1402,24 +1428,24 @@ State 93
    55 ActualArguments: ActualArgumentsComma Expression .
    57 ActualArgumentsComma: ActualArgumentsComma Expression . TokenComma
 
-    TokenComma         shift, and go to state 102
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenComma         shift, and go to state 103
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
     $default  reduce using rule 55 (ActualArguments)
 
 
-State 94
+State 95
 
    23 Statements: Statements . Statement
    27 Statement: TokenOpenCurly $@3 Declarations Statements . TokenCloseCurly
@@ -1427,10 +1453,10 @@ State 94
     TokenId          shift, and go to state 33
     TokenNumber      shift, and go to state 34
     TokenOpenCurly   shift, and go to state 35
-    TokenCloseCurly  shift, and go to state 103
-    TokenOpenPar     shift, and go to state 37
-    TokenIf          shift, and go to state 38
-    TokenWhile       shift, and go to state 39
+    TokenCloseCurly  shift, and go to state 104
+    TokenOpenPar     shift, and go to state 36
+    TokenIf          shift, and go to state 37
+    TokenWhile       shift, and go to state 38
 
     Statement    go to state 40
     IfStatement  go to state 41
@@ -1438,16 +1464,16 @@ State 94
     LValue       go to state 43
 
 
-State 95
+State 96
 
    35 IfStatement: TokenIf TokenOpenPar Expression TokenClosePar . @7 Statement
 
     $default  reduce using rule 34 (@7)
 
-    @7  go to state 104
+    @7  go to state 105
 
 
-State 96
+State 97
 
    33 Statement: TokenWhile @5 TokenOpenPar Expression . TokenClosePar $@6 Statement
    38 Expression: Expression . TokenPlus Expression
@@ -1463,57 +1489,26 @@ State 96
    50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
 
-    TokenClosePar      shift, and go to state 105
-    TokenLogicalOr     shift, and go to state 54
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
-
-
-State 97
-
-   30 Statement: IfStatement TokenElse @4 Statement .
-
-    $default  reduce using rule 30 (Statement)
+    TokenClosePar      shift, and go to state 106
+    TokenLogicalOr     shift, and go to state 55
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
 
 State 98
 
-   38 Expression: Expression . TokenPlus Expression
-   39           | Expression . TokenMinus Expression
-   40           | Expression . TokenMult Expression
-   41           | Expression . TokenDiv Expression
-   43           | Expression . TokenGreaterThan Expression
-   44           | Expression . TokenLessThan Expression
-   45           | Expression . TokenGreaterEqual Expression
-   46           | Expression . TokenLessEqual Expression
-   47           | Expression . TokenDoubleEqual Expression
-   48           | Expression . TokenNotEqual Expression
-   50           | Expression . TokenLogicalOr @8 Expression
-   50           | Expression TokenLogicalOr @8 Expression .
-   52           | Expression . TokenLogicalAnd @9 Expression
+   30 Statement: IfStatement TokenElse @4 Statement .
 
-    TokenLogicalAnd    shift, and go to state 55
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
-
-    $default  reduce using rule 50 (Expression)
+    $default  reduce using rule 30 (Statement)
 
 
 State 99
@@ -1529,102 +1524,133 @@ State 99
    47           | Expression . TokenDoubleEqual Expression
    48           | Expression . TokenNotEqual Expression
    50           | Expression . TokenLogicalOr @8 Expression
+   50           | Expression TokenLogicalOr @8 Expression .
+   52           | Expression . TokenLogicalAnd @9 Expression
+
+    TokenLogicalAnd    shift, and go to state 56
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
+
+    $default  reduce using rule 50 (Expression)
+
+
+State 100
+
+   38 Expression: Expression . TokenPlus Expression
+   39           | Expression . TokenMinus Expression
+   40           | Expression . TokenMult Expression
+   41           | Expression . TokenDiv Expression
+   43           | Expression . TokenGreaterThan Expression
+   44           | Expression . TokenLessThan Expression
+   45           | Expression . TokenGreaterEqual Expression
+   46           | Expression . TokenLessEqual Expression
+   47           | Expression . TokenDoubleEqual Expression
+   48           | Expression . TokenNotEqual Expression
+   50           | Expression . TokenLogicalOr @8 Expression
    52           | Expression . TokenLogicalAnd @9 Expression
    52           | Expression TokenLogicalAnd @9 Expression .
 
-    TokenGreaterThan   shift, and go to state 56
-    TokenLessThan      shift, and go to state 57
-    TokenGreaterEqual  shift, and go to state 58
-    TokenLessEqual     shift, and go to state 59
-    TokenNotEqual      shift, and go to state 60
-    TokenDoubleEqual   shift, and go to state 61
-    TokenMinus         shift, and go to state 62
-    TokenPlus          shift, and go to state 63
-    TokenDiv           shift, and go to state 64
-    TokenMult          shift, and go to state 65
+    TokenGreaterThan   shift, and go to state 57
+    TokenLessThan      shift, and go to state 58
+    TokenGreaterEqual  shift, and go to state 59
+    TokenLessEqual     shift, and go to state 60
+    TokenNotEqual      shift, and go to state 61
+    TokenDoubleEqual   shift, and go to state 62
+    TokenMinus         shift, and go to state 63
+    TokenPlus          shift, and go to state 64
+    TokenDiv           shift, and go to state 65
+    TokenMult          shift, and go to state 66
 
     $default  reduce using rule 52 (Expression)
 
 
-State 100
+State 101
 
    59 LValue: LValue TokenOpenSquare Expression TokenCloseSquare .
 
     $default  reduce using rule 59 (LValue)
 
 
-State 101
+State 102
 
    25 Statement: LValue TokenEqual Expression TokenSemicolon .
 
     $default  reduce using rule 25 (Statement)
 
 
-State 102
+State 103
 
    57 ActualArgumentsComma: ActualArgumentsComma Expression TokenComma .
 
     $default  reduce using rule 57 (ActualArgumentsComma)
 
 
-State 103
+State 104
 
    27 Statement: TokenOpenCurly $@3 Declarations Statements TokenCloseCurly .
 
     $default  reduce using rule 27 (Statement)
 
 
-State 104
+State 105
 
    35 IfStatement: TokenIf TokenOpenPar Expression TokenClosePar @7 . Statement
 
     TokenId         shift, and go to state 33
     TokenNumber     shift, and go to state 34
     TokenOpenCurly  shift, and go to state 35
-    TokenOpenPar    shift, and go to state 37
-    TokenIf         shift, and go to state 38
-    TokenWhile      shift, and go to state 39
+    TokenOpenPar    shift, and go to state 36
+    TokenIf         shift, and go to state 37
+    TokenWhile      shift, and go to state 38
 
-    Statement    go to state 106
+    Statement    go to state 107
     IfStatement  go to state 41
     Expression   go to state 42
     LValue       go to state 43
 
 
-State 105
+State 106
 
    33 Statement: TokenWhile @5 TokenOpenPar Expression TokenClosePar . $@6 Statement
 
     $default  reduce using rule 32 ($@6)
 
-    $@6  go to state 107
+    $@6  go to state 108
 
 
-State 106
+State 107
 
    35 IfStatement: TokenIf TokenOpenPar Expression TokenClosePar @7 Statement .
 
     $default  reduce using rule 35 (IfStatement)
 
 
-State 107
+State 108
 
    33 Statement: TokenWhile @5 TokenOpenPar Expression TokenClosePar $@6 . Statement
 
     TokenId         shift, and go to state 33
     TokenNumber     shift, and go to state 34
     TokenOpenCurly  shift, and go to state 35
-    TokenOpenPar    shift, and go to state 37
-    TokenIf         shift, and go to state 38
-    TokenWhile      shift, and go to state 39
+    TokenOpenPar    shift, and go to state 36
+    TokenIf         shift, and go to state 37
+    TokenWhile      shift, and go to state 38
 
-    Statement    go to state 108
+    Statement    go to state 109
     IfStatement  go to state 41
     Expression   go to state 42
     LValue       go to state 43
 
 
-State 108
+State 109
 
    33 Statement: TokenWhile @5 TokenOpenPar Expression TokenClosePar $@6 Statement .
 
