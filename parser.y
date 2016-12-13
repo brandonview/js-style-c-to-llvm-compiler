@@ -236,7 +236,7 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
     $$ = symbol;
 
     // Add to current symbol table
-    SymbolTable *symbol_table = environment.front();
+    SymbolTable *symbol_table = environment.back();
     symbol_table->addSymbol(symbol);
 
     // Create function type
@@ -675,8 +675,8 @@ Expression
 | TokenId TokenOpenPar ActualArguments TokenClosePar
 {
 
-    // Search function in global scope
-    SymbolTable *symbol_table = environment.front();
+    // Search function in local scope
+    SymbolTable *symbol_table = environment.back();
     Symbol *symbol = symbol_table->getSymbol($1);
 
     // Undeclared, or not a function
