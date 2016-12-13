@@ -235,7 +235,7 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
     symbol->type = type;
     $$ = symbol;
 
-    // Add to global symbol table
+    // Add to current symbol table
     SymbolTable *symbol_table = environment.front();
     symbol_table->addSymbol(symbol);
 
@@ -353,7 +353,8 @@ Declarations TokenCloseCurly
 Statements:
 | Statements Statement
 Statement:
-Expression TokenSemicolon
+Declaration { }
+| Expression TokenSemicolon
 | LValue TokenEqual Expression TokenSemicolon
 {
     llvm::Value *lladdress = $1.llindices->size() > 1 ?
