@@ -1,3 +1,11 @@
+void eggplant() 
+{
+    int x;
+    int y;
+
+    y = x;
+}
+
 void foo()
 {
     int x;
@@ -5,9 +13,8 @@ void foo()
 
     y = x;
 
-    void bar(int b)
-    {
-        int a;
-        a = a + b;
+    void bar(int a) {
+        y = y + a;
     }
+
 }

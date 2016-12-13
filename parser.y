@@ -57,6 +57,7 @@
     %nonassoc TokenThen
     %nonassoc TokenElse
     %token TokenWhile
+    %token TokenReturn
     %type<type> Type
     %type<type> Pointer
     %type<indices> Indices
@@ -375,6 +376,12 @@ Declarations Statements TokenCloseCurly
 
     // Pop symbol table
     environment.pop_back();
+}
+
+| TokenReturn Expression TokenSemicolon
+{
+    std::cerr << "Creating return expression\n";
+    builder->CreateRet($2);
 }
 
 | IfStatement %prec TokenThen
@@ -822,6 +829,8 @@ int main(int argc, char **argv)
     {
         yyparse();
     } while (!feof(yyin));
+
+    environment.back()->dump();
 
     // Dump module
     module->dump();
