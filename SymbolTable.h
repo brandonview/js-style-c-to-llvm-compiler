@@ -74,5 +74,7 @@ class SymbolTable
         /// Return the LLVM types of all symbols in the symbol table, sorted
         /// by their index. This is useful for constructing LLVM struct types.
         void getLLVMTypes(std::vector<llvm::Type *> &types);
+        /// Return the parent table that this table was created as a child of
+        SymbolTable* getParentTable() { return parentTable; }
 };
 #endif

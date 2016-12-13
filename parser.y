@@ -700,6 +700,12 @@ Expression
     SymbolTable *symbol_table = environment.back();
     Symbol *symbol = symbol_table->getSymbol($1);
 
+    // Look up the scope tree until we find something or hit global scope
+    while (!symbol && symbol_table->getParentTable()) {
+        symbol_table = symbol_table->getParentTable();
+        symbol = symbol_table->getSymbol($1);
+    }
+
     // Undeclared, or not a function
     if (!symbol || symbol->type->getKind() != Type::KindFunction)
     {
