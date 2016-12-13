@@ -165,7 +165,7 @@ Declaration:
 | FunctionDeclaration TokenOpenCurly
 {
     // Push new local symbol table
-    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal);
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, environment.back());
     environment.push_back(symbol_table);
 
     // Current LLVM function
@@ -326,7 +326,7 @@ TokenInt
 {
 
     // Push new symbol table to environment
-    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeStruct);
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeStruct, environment.back());
     environment.push_back(symbol_table);
 
     // Create type
@@ -368,7 +368,7 @@ Declaration { }
 {
 
     // Push new local symbol table
-    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal);
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, environment.back());
     environment.push_back(symbol_table);
 }
 
@@ -825,7 +825,8 @@ int main(int argc, char **argv)
     module = new llvm::Module("TestModule", context);
 
     // Push global symbol table to environment
-    SymbolTable *global_symbol_table = new SymbolTable(SymbolTable::ScopeGlobal);
+    // Parent symbol table for global is null
+    SymbolTable *global_symbol_table = new SymbolTable(SymbolTable::ScopeGlobal, nullptr);
     environment.push_back(global_symbol_table);
 
     // Parse input until there is no more

@@ -48,13 +48,15 @@ class SymbolTable
             ScopeStruct
         };
     private:
+        // Parent scope
+        SymbolTable* parentTable;
         // Symbol table scope
         Scope scope;
         // Symbols
         std::unordered_map<std::string, Symbol *> symbols;
     public:
         /// Constructor
-        SymbolTable(Scope scope) : scope(scope) { }
+        SymbolTable(Scope scope, SymbolTable* parentTable) : scope(scope), parentTable(parentTable) { }
         /// Return the symbol table scope
         Scope getScope() { return scope; }
         /// Return a symbol given its name, or nullptr if not found.
