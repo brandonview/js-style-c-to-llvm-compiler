@@ -1,3 +1,5 @@
+// test single line comment
+
 void eggplant() 
 {
     int x;

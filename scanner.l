@@ -15,6 +15,9 @@ using namespace std;
 %option noyywrap
 
 %%
+
+"//".* { /* single line comments */ }
+
 "int" {
     return TokenInt;
 }
