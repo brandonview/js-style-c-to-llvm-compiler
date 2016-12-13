@@ -7,8 +7,10 @@ void add() {
     a = a + 1;
 }
 
-// We should see a distinct llvm variable created for the inner var a for each of these calls
-add();
-add();
-add();
+void main() {
+    // We should see a distinct value created for the inner var "a" using alloca for each of these calls
+    add();
+    add();
+    add();
+}
 

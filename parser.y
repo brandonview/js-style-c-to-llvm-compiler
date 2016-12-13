@@ -116,7 +116,7 @@
 
 %%
 Start:
-    Declarations
+    Declarations Statements
 
 Declarations:
     | Declarations Declaration
@@ -206,7 +206,7 @@ Declaration:
 
 }
 
-Declarations Statements Declarations TokenCloseCurly
+Declarations Statements TokenCloseCurly
 {
 
     // Return statement, if not present
@@ -736,6 +736,9 @@ TokenId
         std::cerr << "Undeclared identifier: " << $1 << '\n';
         exit(1);
     }
+
+    std::cerr << "found symbol:\t";
+    symbol->dump();
 
     // Save info
     $$.type = symbol->type;

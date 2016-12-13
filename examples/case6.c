@@ -14,6 +14,8 @@ int foo() {
     return a;
 }
 
-foo();
-foo();
-foo();
+void main() {
+    foo();
+    foo();
+    foo();
+}

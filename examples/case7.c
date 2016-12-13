@@ -12,8 +12,10 @@ void bar(function f, int x) {
     f(x);
 }
 
-int y;
-y = 0;
-// calling bar() should invoke function foo() on var y 
-bar(foo, y);
+void main() {
+    int y;
+    y = 0;
+    // calling bar() should invoke function foo() on var y 
+    bar(foo, y);
+}
    
