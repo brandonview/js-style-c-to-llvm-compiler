@@ -2,7 +2,7 @@
 //
 // A version of closures implemented on top of our miniCToLlvm compiler
 
-int foo() {
+function foo() {
     int a;
     a = 0;
 
@@ -11,11 +11,18 @@ int foo() {
         return a;
     }
 
-    return a;
+    return bar;
 }
 
 void main() {
-    foo();
-    foo();
-    foo();
+    // creates a function "test" set equal to the return value of "foo",
+    // which in this case, is the function "bar"
+    function test = foo();
+
+    int testValue;
+
+    testValue = test();
+    // testValue = 1 at this point
+    testValue = test();
+    // testValue = 2 at this point
 }
