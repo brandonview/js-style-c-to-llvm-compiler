@@ -20,6 +20,11 @@
     llvm::BasicBlock *basic_block;
     llvm::IRBuilder<> *builder;
 
+    // Variables introduced to track nested function scopes
+    // implementing these as a list allows us to treat them as a stack to push and pop the current function we're generating llvm code for
+    std::list<llvm::Function *> outerFunctions;           // keep track of the outer functions when inner functions are declared
+    std::list<llvm::BasicBlock *> outerFunctionBasicBlocks;       // keep track of what basic block the outer function was in the middle of
+
     // Environment: stack of symbol tables. It is actually implemented as a list
 
     // to facilitate the traversal of symbol tables.
@@ -168,6 +173,12 @@ Declaration:
     SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, environment.back());
     environment.push_back(symbol_table);
 
+    // Keep track of the outer function and current basic block if there is one
+    llvm::Function* outerFunction = function;
+    outerFunctions.push_back(outerFunction);
+    llvm::BasicBlock* outerFunctionBasicBlock = basic_block;
+    outerFunctionBasicBlocks.push_back(outerFunctionBasicBlock);
+
     // Current LLVM function
     function = llvm::cast<llvm::Function>($1->lladdress);
     function->dump();
@@ -175,7 +186,7 @@ Declaration:
     // Create entry basic block
     basic_block = llvm::BasicBlock::Create(
             llvm::getGlobalContext(),
-            Symbol::getBasicBlock(),
+            "entry",
             function);
     builder->SetInsertPoint(basic_block);
 
@@ -210,8 +221,18 @@ Declarations Statements TokenCloseCurly
 {
 
     // Return statement, if not present
-    if (!basic_block->getTerminator())
+    if (!basic_block->getTerminator()) {
+        std::cerr << "Creating return void for function:\t" << function->getName().str() << "\n";
         builder->CreateRetVoid();
+    }
+
+    // Restore the outer function and basic block
+    basic_block = outerFunctionBasicBlocks.back();
+    outerFunctionBasicBlocks.pop_back();
+    function = outerFunctions.back();
+    outerFunctions.pop_back();
+    if (basic_block)
+        builder->SetInsertPoint(basic_block);
 
     // Pop local symbol table
     SymbolTable *symbol_table = environment.back();

@@ -88,7 +88,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 72 "parser.y"
+#line 77 "parser.y"
 
         char *name;
         llvm::Value *llvalue;
