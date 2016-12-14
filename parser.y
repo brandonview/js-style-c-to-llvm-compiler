@@ -197,22 +197,31 @@ Declaration:
             it != end;
             ++it)
     {
-
         // Name argument
         Symbol *argument = (*$1->type->arguments)[index++];
         it->setName(argument->getName());
 
-        // Create local symbol
+        // Check to see if this arg is inherited or not
+        auto parent_symbol_it = symbol_table->getParentSymbols().find(argument->getName());
+
+        // Create symbol
         Symbol *symbol = new Symbol(argument->getName());
         symbol->type = argument->type;
-        symbol_table->addSymbol(symbol);
 
-        // Emit 'alloca' instruction
-        symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
+        // If it wasn't inherited
+        if (parent_symbol_it == symbol_table->getParentSymbols().end()) 
+        {
+            // Save as a local symbol
+            symbol_table->addSymbol(symbol);
+
+            // Emit 'alloca' instruction
+            symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
                 nullptr, Symbol::getTemp());
 
-        // Emit 'store' instruction
-        builder->CreateStore(it, symbol->lladdress);
+            // Emit 'store' instruction
+            builder->CreateStore(it, symbol->lladdress);
+
+        }
     }
 
 }
@@ -250,6 +259,19 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
     Type *type = new Type(Type::KindFunction);
     type->rettype = $1;
     type->arguments = $4;
+
+    // add arguments for all inherited values
+    // These arguments will be pointers to the values that should be modified
+    std::unordered_map<std::string, Symbol *> inheritedSymbols = environment.back()->getAllSymbols();
+    for (auto it = inheritedSymbols.begin(); it != inheritedSymbols.end(); it++) {
+        // create a symbol pointing to the inherited symbol
+        Symbol *symbol = new Symbol(it->first);
+        symbol->type = new Type(Type::KindPointer);
+        symbol->type->subtype = it->second->type;
+        symbol->type->lltype = llvm::PointerType::get(it->second->type->lltype, 0);
+        symbol->index = type->arguments->size();
+        type->arguments->push_back(symbol);
+    }
 
     // Create symbol
     Symbol *symbol = new Symbol($2);
@@ -745,20 +767,21 @@ ActualArgumentsComma:
 LValue:
 TokenId
 {
+    // Search symbol in local scope
+    SymbolTable *symbol_table = environment.back();
+    Symbol *symbol = symbol_table->getSymbol($1);
 
-    // Search symbol in environment, from the top to the bottom
-    Symbol *symbol = nullptr;
-    for (auto it = environment.rbegin();
-            it != environment.rend();
-            ++it)
-    {
-        SymbolTable *symbol_table = *it;
-        symbol = symbol_table->getSymbol($1);
-        if (symbol)
-            break;
+    // Check if this symbol was inherited
+    if (!symbol) {
+        auto it = symbol_table->getParentSymbols().find($1);
+        if (it != symbol_table->getParentSymbols().end()) {
+            symbol = it->second;
+            // hack to just use the "implicit" argument passed into the function if we find this is from a parent
+            symbol->lladdress->setName(it->first);
+        }
     }
 
-    // Undeclared
+    // Undeclared in this scope and parent scopes
     if (!symbol)
     {
         std::cerr << "Undeclared identifier: " << $1 << '\n';

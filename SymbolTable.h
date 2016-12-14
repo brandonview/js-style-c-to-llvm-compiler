@@ -73,7 +73,8 @@ class SymbolTable
                 // Debug hack to see if functions are actually receiving parent symbols before creation, delete before turning in
                 std::cerr << "Values inherited by new scope:\n";
                 for (auto it = parentSymbols.begin(); it != parentSymbols.end(); it++) {
-                    it->second->dump();
+                    std::cerr << "Symbol Table Key : " << it->first << "\n";
+                    it->second->dump(1);
                 }
             }
         }
@@ -100,17 +101,15 @@ class SymbolTable
         {
             std::unordered_map<std::string, Symbol *> allSymbols;
             if (scope != ScopeGlobal) {
-                // if we're not in a global scope, add all of our symbols
-                allSymbols.insert(symbols.begin(), symbols.end());
-            } else {
-                // if we are in global scope, only give back functions since global variables can be accessed anyway
+                // if we're not in a global scope, add all of our symbols that aren't functions
                 for (auto it = symbols.begin(); it != symbols.end(); it++) {
-                    if (it->second->type->getKind() == Type::KindFunction) {
+                    if (it->second->type->getKind() != Type::KindFunction) {
                         allSymbols[it->first] = it->second;
                     }
                 }
             }
             allSymbols.insert(parentSymbols.begin(), parentSymbols.end());
+
             return allSymbols;
         }
         /// Dump symbol table to standard output
