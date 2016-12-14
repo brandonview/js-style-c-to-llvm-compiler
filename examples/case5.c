@@ -1,4 +1,5 @@
 // A nested function should have access to the variables in the outer function
+// However,
 
 int foo() {
     int a;

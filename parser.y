@@ -244,7 +244,7 @@ FunctionDeclaration:
 Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
 {
 
-    std::cerr << "Generating llvm for function declaration: " << $2 << "\n";
+    std::cerr << "\nGenerating llvm for function declaration: " << $2 << "\n";
 
     // Create type
     Type *type = new Type(Type::KindFunction);
@@ -765,8 +765,8 @@ TokenId
         exit(1);
     }
 
-    std::cerr << "found symbol:\t";
-    symbol->dump();
+    //std::cerr << "found symbol:\t";
+    //symbol->dump();
 
     // Save info
     $$.type = symbol->type;
@@ -865,7 +865,9 @@ int main(int argc, char **argv)
     environment.back()->dump();
 
     // Dump module
+    std::cerr << "\n\n\n\n\n================================ LLVM CODE ================================\n\n\n";
     module->dump();
+    std::cerr << "\n\n\n============================== END LLVM CODE ==============================\n\n\n\n\n";
     return 0;
 }
 
@@ -875,5 +877,4 @@ void yyerror(const char *s)
     std::cerr << s << std::endl;
     exit(1);
 }
-
 

@@ -17,10 +17,18 @@ void Type::dump(int indent)
         case KindArray: std::cout << "Array"; break;
         case KindStruct: std::cout << "Struct"; break;
         case KindPointer: std::cout << "Pointer"; break;
+        case KindFunction: std::cout << "Function"; break;
     }
     // Number of elements for arrays
     if (kind == KindArray)
         std::cout << ", num_elem=" << num_elem;
+    // Return type for functions
+    if (kind == KindFunction)
+    {
+        std::cout << ", ret_type=\n";
+        rettype->dump(indent + 2);
+    }
+
     // Newline
     std::cout << '\n';
     // Subtypes

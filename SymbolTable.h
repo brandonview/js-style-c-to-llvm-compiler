@@ -54,17 +54,53 @@ class SymbolTable
         Scope scope;
         // Symbols
         std::unordered_map<std::string, Symbol *> symbols;
+
+        // The stack frame containing symbols inherited from the parent
+        // If not overridden locally, these values should be restored when exiting the scope of a SymbolTable
+        std::unordered_map<std::string, Symbol *> parentSymbols;
     public:
         /// Constructor
-        SymbolTable(Scope scope, SymbolTable* parentTable) : scope(scope), parentTable(parentTable) { }
+        SymbolTable(Scope scope, SymbolTable* parentTable) : 
+                scope(scope), 
+                parentTable(parentTable)
+        { 
+            // note - parentSymbols is intentionally passed by value since values overridden locally
+            // by reinitializing them should be removed and tracked as local but should be left in the parent scope
+            if (parentTable)
+            {
+                parentSymbols = parentTable->getAllSymbols(); 
+                // Debug hack to see if functions are actually receiving parent symbols before creation, delete before turning in
+                std::cerr << "Values inherited by new scope:\n";
+                for (auto it = parentSymbols.begin(); it != parentSymbols.end(); it++) {
+                    it->second->dump();
+                }
+            }
+        }
         /// Return the symbol table scope
         Scope getScope() { return scope; }
         /// Return a symbol given its name, or nullptr if not found.
         Symbol *getSymbol(const std::string &name);
-        /// Add symbol to table
+        /// Add symbol to table - should only be called if the symbol is initialized in this scope
+        /// i.e. don't add a symbol for a variable inherited from an outer scope
         void addSymbol(Symbol *symbol)
         {
+            // add to list of local symbols
             symbols[symbol->getName()] = symbol;
+
+            // remove from the list of parent symbols since it's reinitialized in a local scope
+           auto matchingParentSymbol = parentSymbols.find(symbol->getName());
+           if (matchingParentSymbol != parentSymbols.end()) {
+               parentSymbols.erase(matchingParentSymbol);
+           }
+        }
+        /// Get the map of all symbols available to this scope by value. This is 
+        /// useful when creating a child scope that needs to inherit all symbols
+        std::unordered_map<std::string, Symbol *> getAllSymbols() 
+        {
+            std::unordered_map<std::string, Symbol *> allSymbols;
+            allSymbols.insert(symbols.begin(), symbols.end());
+            allSymbols.insert(parentSymbols.begin(), parentSymbols.end());
+            return allSymbols;
         }
         /// Dump symbol table to standard output
         void dump(int indent = 0);
@@ -76,5 +112,7 @@ class SymbolTable
         void getLLVMTypes(std::vector<llvm::Type *> &types);
         /// Return the parent table that this table was created as a child of
         SymbolTable* getParentTable() { return parentTable; }
+        /// get the parent symbols that may have been modified by this scope
+        std::unordered_map<std::string, Symbol *> getParentSymbols() { return parentSymbols; }
 };
 #endif
