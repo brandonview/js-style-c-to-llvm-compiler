@@ -724,6 +724,7 @@ Expression
 
     // Look up the scope tree until we find something or hit global scope
     while (!symbol && symbol_table->getParentTable()) {
+        std::cerr << "LOOKIN SOME MORE\n";
         symbol_table = symbol_table->getParentTable();
         symbol = symbol_table->getSymbol($1);
     }
@@ -733,6 +734,22 @@ Expression
     {
         std::cerr << "Identifier is not a function: " << $1 << '\n';
         exit(1);
+    }
+
+    symbol_table->dump();
+
+    // Find and dd all values that will be inherited by the function 
+    // to the list of actual arguments
+    for (auto it = symbol_table->getParentSymbols().begin(); 
+            it != symbol_table->getParentSymbols().end(); 
+            it++) {
+        // check locally for the variable to pass down
+        std::cerr << "DOIN IT\n";
+        Symbol *symbol = environment.back()->getSymbol(it->first);
+        if (symbol) {
+            $3->push_back(builder->CreateGEP(symbol->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp()));
+        }
+
     }
 
     // Invoke
