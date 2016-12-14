@@ -20,7 +20,8 @@ class Type
             KindArray,
             KindStruct,
             KindPointer,
-            KindFunction
+            KindFunction,
+            KindClosure
         };
     private:
         // Type kind

@@ -50,36 +50,37 @@ extern int yydebug;
      TokenFloat = 259,
      TokenVoid = 260,
      TokenStruct = 261,
-     TokenId = 262,
-     TokenNumber = 263,
-     TokenOpenCurly = 264,
-     TokenCloseCurly = 265,
-     TokenOpenSquare = 266,
-     TokenCloseSquare = 267,
-     TokenOpenPar = 268,
-     TokenClosePar = 269,
-     TokenSemicolon = 270,
-     TokenComma = 271,
-     TokenPoint = 272,
-     TokenEqual = 273,
-     TokenLogicalOr = 274,
-     TokenLogicalAnd = 275,
-     TokenLogicalNot = 276,
-     TokenGreaterThan = 277,
-     TokenLessThan = 278,
-     TokenGreaterEqual = 279,
-     TokenLessEqual = 280,
-     TokenNotEqual = 281,
-     TokenDoubleEqual = 282,
-     TokenMinus = 283,
-     TokenPlus = 284,
-     TokenDiv = 285,
-     TokenMult = 286,
-     TokenIf = 287,
-     TokenThen = 288,
-     TokenElse = 289,
-     TokenWhile = 290,
-     TokenReturn = 291
+     TokenFunction = 262,
+     TokenId = 263,
+     TokenNumber = 264,
+     TokenOpenCurly = 265,
+     TokenCloseCurly = 266,
+     TokenOpenSquare = 267,
+     TokenCloseSquare = 268,
+     TokenOpenPar = 269,
+     TokenClosePar = 270,
+     TokenSemicolon = 271,
+     TokenComma = 272,
+     TokenPoint = 273,
+     TokenEqual = 274,
+     TokenLogicalOr = 275,
+     TokenLogicalAnd = 276,
+     TokenLogicalNot = 277,
+     TokenGreaterThan = 278,
+     TokenLessThan = 279,
+     TokenGreaterEqual = 280,
+     TokenLessEqual = 281,
+     TokenNotEqual = 282,
+     TokenDoubleEqual = 283,
+     TokenMinus = 284,
+     TokenPlus = 285,
+     TokenDiv = 286,
+     TokenMult = 287,
+     TokenIf = 288,
+     TokenThen = 289,
+     TokenElse = 290,
+     TokenWhile = 291,
+     TokenReturn = 292
    };
 #endif
 
@@ -88,7 +89,7 @@ extern int yydebug;
 typedef union YYSTYPE
 {
 /* Line 2058 of yacc.c  */
-#line 77 "parser.y"
+#line 80 "parser.y"
 
         char *name;
         llvm::Value *llvalue;
@@ -135,7 +136,7 @@ typedef union YYSTYPE
     
 
 /* Line 2058 of yacc.c  */
-#line 139 "parser.h"
+#line 140 "parser.h"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */

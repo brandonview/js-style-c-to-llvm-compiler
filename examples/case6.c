@@ -14,15 +14,16 @@ function foo() {
     return bar;
 }
 
-void main() {
-    // creates a function "test" set equal to the return value of "foo",
-    // which in this case, is the function "bar"
-    function test = foo();
-
-    int testValue;
-
-    testValue = test();
-    // testValue = 1 at this point
-    testValue = test();
-    // testValue = 2 at this point
-}
+//void main() {
+//    // creates a function "test" set equal to the return value of "foo",
+//    // which in this case, is the function "bar"
+//    function test;
+//    test = foo();
+//
+//    int testValue;
+//
+//    testValue = test();
+//    // testValue = 1 at this point
+//    testValue = test();
+//    // testValue = 2 at this point
+//}

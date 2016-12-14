@@ -35,6 +35,7 @@
     %token TokenFloat
     %token TokenVoid
     %token TokenStruct
+    %token TokenFunction
     %token<name> TokenId
     %token<value> TokenNumber
     %token TokenOpenCurly
@@ -72,8 +73,10 @@
     %type<formal_arguments> FormalArguments
     %type<formal_arguments> FormalArgumentsComma
     %type<symbol> FunctionDeclaration
+    %type<formal_arguments> ClosureDeclaration
     %type<actual_arguments> ActualArguments
     %type<actual_arguments> ActualArgumentsComma
+    %type<symbol> ClosureReturn
     %union {
         char *name;
         llvm::Value *llvalue;
@@ -169,6 +172,107 @@ Declaration:
     symbol_table->addSymbol(symbol);
     symbol_table->dump();
 }
+| ClosureDeclaration TokenOpenCurly
+{
+    std::cerr << "reached Closure definition\n";
+    // Push new local symbol table
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, currentScope);
+    environment.push_back(symbol_table);
+    currentScope = symbol_table;
+
+    // Keep track of the outer function and current basic block if there is one
+    llvm::Function* outerFunction = function;
+    outerFunctions.push_back(outerFunction);
+    llvm::BasicBlock* outerFunctionBasicBlock = basic_block;
+    outerFunctionBasicBlocks.push_back(outerFunctionBasicBlock);
+
+
+    // Create entry basic block
+    basic_block = llvm::BasicBlock::Create(
+            llvm::getGlobalContext(),
+            "entry",
+            function);
+    builder->SetInsertPoint(basic_block);
+    
+
+    /* DO EVERYTHING HERE */
+}
+Declarations Statements ClosureReturn TokenCloseCurly
+{
+    // create a function with the same return type as the function returned
+    Type *type = new Type(Type::KindFunction);
+    type->rettype = $5->getType()->rettype;
+    type->arguments = $5->getType()->arguments;     //TODO Change to args from return function to ClosureDeclaration
+
+    // add arguments for all inherited values
+    // These arguments will be pointers to the values that should be modified
+    std::unordered_map<std::string, Symbol *> inheritedSymbols = currentScope->getAllSymbols();
+    for (auto it = inheritedSymbols.begin(); it != inheritedSymbols.end(); it++) {
+        // create a symbol pointing to the inherited symbol
+        Symbol *symbol = new Symbol(it->first);
+        symbol->type = new Type(Type::KindPointer);
+        symbol->type->subtype = it->second->type;
+        symbol->type->lltype = llvm::PointerType::get(it->second->type->lltype, 0);
+        symbol->index = type->arguments->size();
+        symbol->lladdress = it->second->lladdress;
+        symbol->lladdress->setName(it->first);
+        type->arguments->push_back(symbol);
+    }
+
+    std::vector<llvm::Type *> stackFrameTypes;
+    
+    for (auto it = currentScope->getSymbols().begin(); it != currentScope->getSymbols()->end(); it++) {
+        stackFrameTypes->push_back(it->second);
+    }
+
+    Symbol * closureStackFrame = new Symbol("stackframe_" + $3->getName());
+    closureStackFrame->type = new Type(Type::KindStruct);
+
+    llvm::StructType::create(llvm::getGlobalContext(), lltypes);
+
+
+    // Create symbol
+    Symbol *symbol = new Symbol($2);
+    symbol->type = type;
+    $$ = symbol;
+
+    // Add to current symbol table
+    currentScope->addSymbol(symbol);
+
+    // Create function type
+    std::vector<llvm::Type *> types;
+    for (Symbol *symbol : *$4)
+        types.push_back(symbol->type->lltype);
+        
+    llvm::FunctionType *function_type = llvm::FunctionType::get(
+            $1->lltype,
+            types,
+            false);
+
+    // Insert function
+    symbol->lladdress = module->getOrInsertFunction($2,
+            function_type);
+
+    // create a struct type that any callers can use to track the stack frame
+    // this struct will be stored outside this closure definition and will
+    // act as the "private variables" of this closure
+
+    // iterate over all symbols in the current symbol table
+    // for each symbol, add a pointer type to that type in a struct
+
+
+
+    // Restore the outer function and basic block
+    basic_block = outerFunctionBasicBlocks.back();
+    outerFunctionBasicBlocks.pop_back();
+    function = outerFunctions.back();
+    outerFunctions.pop_back();
+    if (basic_block)
+        builder->SetInsertPoint(basic_block);
+
+    // Pop local symbol table
+    currentScope = currentScope->getParentTable();
+}
 
 | FunctionDeclaration TokenOpenCurly
 {
@@ -257,6 +361,59 @@ Declarations Statements TokenCloseCurly
 }
 
 | FunctionDeclaration TokenSemicolon
+
+ClosureDeclaration:
+TokenFunction TokenId TokenOpenPar FormalArguments TokenClosePar
+{
+    std::cerr << "reached ClosureDeclaration\n";
+
+    std::vector<Symbol *>*  arguments = $4;
+
+    // add arguments for all inherited values
+    // These arguments will be pointers to the values that should be modified
+    std::unordered_map<std::string, Symbol *> inheritedSymbols = currentScope->getAllSymbols();
+    for (auto it = inheritedSymbols.begin(); it != inheritedSymbols.end(); it++) {
+        // create a symbol pointing to the inherited symbol
+        Symbol *symbol = new Symbol(it->first);
+        symbol->type = new Type(Type::KindPointer);
+        symbol->type->subtype = it->second->type;
+        symbol->type->lltype = llvm::PointerType::get(it->second->type->lltype, 0);
+        symbol->index = arguments->size();
+        symbol->lladdress = it->second->lladdress;
+        symbol->lladdress->setName(it->first);
+        arguments->push_back(symbol);
+    }
+
+    // DON'T INSERT OR CREATE THE FUNCTION YET
+    // Just keep track of the argument types
+    $$ = arguments;
+}
+
+ClosureReturn:
+TokenReturn TokenId TokenSemicolon
+{
+    // Search function in local scope
+    SymbolTable *symbol_table = currentScope;
+    Symbol *symbol = symbol_table->getSymbol($2);
+
+    // Look up the scope tree until we find something or hit global scope
+    while (!symbol && symbol_table->getParentTable()) {
+        std::cerr << "LOOKIN SOME MORE\n";
+        symbol_table = symbol_table->getParentTable();
+        symbol = symbol_table->getSymbol($2);
+    }
+
+    // Undeclared, or not a function
+    if (!symbol || symbol->type->getKind() != Type::KindFunction)
+    {
+        std::cerr << "Identifier is not a function: " << $2 << '\n';
+        exit(1);
+    }
+
+    $$ = symbol;
+}
+
+
 FunctionDeclaration:
 Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
 {
@@ -295,6 +452,7 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
     std::vector<llvm::Type *> types;
     for (Symbol *symbol : *$4)
         types.push_back(symbol->type->lltype);
+        
     llvm::FunctionType *function_type = llvm::FunctionType::get(
             $1->lltype,
             types,

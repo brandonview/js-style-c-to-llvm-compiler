@@ -18,6 +18,10 @@ using namespace std;
 
 "//".* { /* single line comments */ }
 
+"function" {
+    return TokenFunction;
+}
+
 "int" {
     return TokenInt;
 }
