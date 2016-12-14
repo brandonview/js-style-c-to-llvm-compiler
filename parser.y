@@ -212,12 +212,12 @@ Declaration:
         Symbol *symbol = new Symbol(argument->getName());
         symbol->type = argument->type;
 
+        // Save as a local symbol
+        symbol_table->addSymbol(symbol);
+
         // If it wasn't inherited
         if (parent_symbol_it == symbol_table->getParentSymbols().end()) 
         {
-            // Save as a local symbol
-            symbol_table->addSymbol(symbol);
-
             // Emit 'alloca' instruction
             symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
                 nullptr, Symbol::getTemp());
@@ -225,6 +225,11 @@ Declaration:
             // Emit 'store' instruction
             builder->CreateStore(it, symbol->lladdress);
 
+        } else {
+            // Emit GEP to reference the address passed in by the arg
+            // In this way, whatever was located at the address will be modified,
+            // rather than creating a local copy
+            symbol->lladdress = builder->CreateGEP(argument->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp());
         }
     }
 
@@ -273,6 +278,8 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
         symbol->type->subtype = it->second->type;
         symbol->type->lltype = llvm::PointerType::get(it->second->type->lltype, 0);
         symbol->index = type->arguments->size();
+        symbol->lladdress = it->second->lladdress;
+        symbol->lladdress->setName(it->first);
         type->arguments->push_back(symbol);
     }
 
