@@ -26,9 +26,9 @@
     std::list<llvm::BasicBlock *> outerFunctionBasicBlocks;       // keep track of what basic block the outer function was in the middle of
 
     // Environment: stack of symbol tables. It is actually implemented as a list
-
     // to facilitate the traversal of symbol tables.
     std::list<SymbolTable *> environment;
+    SymbolTable * currentScope;
     %}
 
     %token TokenInt
@@ -131,7 +131,7 @@ Declaration:
 {
 
     // Get top symbol table
-    SymbolTable *symbol_table = environment.back();
+    SymbolTable *symbol_table = currentScope;
 
     // Create new symbol
     Symbol *symbol = new Symbol($2);
@@ -164,14 +164,18 @@ Declaration:
                 nullptr, Symbol::getTemp());
 
     // Insert in symbol table
+    std::cerr << "ADDING SYMBOL:\t";
+    symbol->dump();
     symbol_table->addSymbol(symbol);
+    symbol_table->dump();
 }
 
 | FunctionDeclaration TokenOpenCurly
 {
     // Push new local symbol table
-    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, environment.back());
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, currentScope);
     environment.push_back(symbol_table);
+    currentScope = symbol_table;
 
     // Keep track of the outer function and current basic block if there is one
     llvm::Function* outerFunction = function;
@@ -244,8 +248,7 @@ Declarations Statements TokenCloseCurly
         builder->SetInsertPoint(basic_block);
 
     // Pop local symbol table
-    SymbolTable *symbol_table = environment.back();
-    environment.pop_back();
+    currentScope = currentScope->getParentTable();
 }
 
 | FunctionDeclaration TokenSemicolon
@@ -262,7 +265,7 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
 
     // add arguments for all inherited values
     // These arguments will be pointers to the values that should be modified
-    std::unordered_map<std::string, Symbol *> inheritedSymbols = environment.back()->getAllSymbols();
+    std::unordered_map<std::string, Symbol *> inheritedSymbols = currentScope->getAllSymbols();
     for (auto it = inheritedSymbols.begin(); it != inheritedSymbols.end(); it++) {
         // create a symbol pointing to the inherited symbol
         Symbol *symbol = new Symbol(it->first);
@@ -279,8 +282,7 @@ Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
     $$ = symbol;
 
     // Add to current symbol table
-    SymbolTable *symbol_table = environment.back();
-    symbol_table->addSymbol(symbol);
+    currentScope->addSymbol(symbol);
 
     // Create function type
     std::vector<llvm::Type *> types;
@@ -369,8 +371,9 @@ TokenInt
 {
 
     // Push new symbol table to environment
-    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeStruct, environment.back());
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeStruct, currentScope);
     environment.push_back(symbol_table);
+    currentScope = symbol_table;
 
     // Create type
     $<type>$ = new Type(Type::KindStruct);
@@ -384,13 +387,12 @@ Declarations TokenCloseCurly
     $$ = $<type>3;
 
     // LLVM structure
-    SymbolTable *symbol_table = environment.back();
     std::vector<llvm::Type *> lltypes;
-    symbol_table->getLLVMTypes(lltypes);
+    currentScope->getLLVMTypes(lltypes);
     $$->lltype = llvm::StructType::create(llvm::getGlobalContext(), lltypes);
 
     // Pop symbol table from environment
-    environment.pop_back();
+    currentScope = currentScope->getParentTable();
 }
 
 Statements:
@@ -407,25 +409,25 @@ Declaration { }
     builder->CreateStore($3, lladdress);
 }
 
-| TokenOpenCurly
-{
-
-    // Push new local symbol table
-    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, environment.back());
-    environment.push_back(symbol_table);
-}
-
-Declarations Statements TokenCloseCurly
-{
-
-    // Pop symbol table
-    environment.pop_back();
-}
-
 | TokenReturn Expression TokenSemicolon
 {
     std::cerr << "Creating return expression\n";
     builder->CreateRet($2);
+}
+
+| TokenOpenCurly
+{
+    // Push new local symbol table
+    SymbolTable *symbol_table = new SymbolTable(SymbolTable::ScopeLocal, currentScope);
+    environment.push_back(symbol_table);
+    currentScope = symbol_table;
+}
+
+Statements TokenCloseCurly
+{
+
+    // Pop symbol table
+    currentScope = currentScope->getParentTable();
 }
 
 | IfStatement %prec TokenThen
@@ -719,7 +721,7 @@ Expression
 {
 
     // Search function in local scope
-    SymbolTable *symbol_table = environment.back();
+    SymbolTable *symbol_table = currentScope;
     Symbol *symbol = symbol_table->getSymbol($1);
 
     // Look up the scope tree until we find something or hit global scope
@@ -736,20 +738,29 @@ Expression
         exit(1);
     }
 
-    symbol_table->dump();
+    // let's cast the symbol to a function so we can get a list of arguments
+    llvm::Function * callee = llvm::cast<llvm::Function>(symbol->lladdress);
 
-    // Find and dd all values that will be inherited by the function 
+    // Find and add all values that will be inherited by the function 
     // to the list of actual arguments
-    for (auto it = symbol_table->getParentSymbols().begin(); 
-            it != symbol_table->getParentSymbols().end(); 
-            it++) {
+    int index = 0;
+    for (llvm::Function::arg_iterator it = callee->arg_begin(),
+            end = callee->arg_end();
+            it != end;
+            ++it)
+    {
+        // get argument
+        Symbol *argument = (*symbol->type->arguments)[index++];
+
+        // ignore the explicitly declared arguments, they should already be there
+        if (index < $3->size()) continue;
+
         // check locally for the variable to pass down
         std::cerr << "DOIN IT\n";
-        Symbol *symbol = environment.back()->getSymbol(it->first);
-        if (symbol) {
-            $3->push_back(builder->CreateGEP(symbol->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp()));
+        Symbol * stackFrameArg = currentScope->getSymbol(argument->getName());
+        if (stackFrameArg) {
+            $3->push_back(builder->CreateGEP(stackFrameArg->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp()));
         }
-
     }
 
     // Invoke
@@ -785,7 +796,7 @@ LValue:
 TokenId
 {
     // Search symbol in local scope
-    SymbolTable *symbol_table = environment.back();
+    SymbolTable *symbol_table = currentScope;
     Symbol *symbol = symbol_table->getSymbol($1);
 
     // Check if this symbol was inherited
@@ -793,14 +804,18 @@ TokenId
         auto it = symbol_table->getParentSymbols().find($1);
         if (it != symbol_table->getParentSymbols().end()) {
             symbol = it->second;
-            // hack to just use the "implicit" argument passed into the function if we find this is from a parent
-            symbol->lladdress->setName(it->first);
         }
     }
+
+    // If we still don't have it, See if it's in the global scope
+    if (!symbol)
+        symbol = environment.front()->getSymbol($1);
+
 
     // Undeclared in this scope and parent scopes
     if (!symbol)
     {
+        currentScope->dump();
         std::cerr << "Undeclared identifier: " << $1 << '\n';
         exit(1);
     }
@@ -895,6 +910,7 @@ int main(int argc, char **argv)
     // Parent symbol table for global is null
     SymbolTable *global_symbol_table = new SymbolTable(SymbolTable::ScopeGlobal, nullptr);
     environment.push_back(global_symbol_table);
+    currentScope = global_symbol_table;
 
     // Parse input until there is no more
     do
@@ -913,7 +929,7 @@ int main(int argc, char **argv)
 
 void yyerror(const char *s)
 {
-    environment.back()->dump();
+    currentScope->dump();
     std::cerr << s << std::endl;
     exit(1);
 }
