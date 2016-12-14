@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include <llvm/IR/Module.h>
+#include "Type.h"
 // Forward declaration
 class Type;
 class Symbol
@@ -98,7 +99,17 @@ class SymbolTable
         std::unordered_map<std::string, Symbol *> getAllSymbols() 
         {
             std::unordered_map<std::string, Symbol *> allSymbols;
-            allSymbols.insert(symbols.begin(), symbols.end());
+            if (scope != ScopeGlobal) {
+                // if we're not in a global scope, add all of our symbols
+                allSymbols.insert(symbols.begin(), symbols.end());
+            } else {
+                // if we are in global scope, only give back functions since global variables can be accessed anyway
+                for (auto it = symbols.begin(); it != symbols.end(); it++) {
+                    if (it->second->type->getKind() == Type::KindFunction) {
+                        allSymbols[it->first] = it->second;
+                    }
+                }
+            }
             allSymbols.insert(parentSymbols.begin(), parentSymbols.end());
             return allSymbols;
         }
