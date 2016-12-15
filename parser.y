@@ -35,6 +35,7 @@
     %token TokenFloat
     %token TokenVoid
     %token TokenStruct
+    %token TokenFunction
     %token<name> TokenId
     %token<value> TokenNumber
     %token TokenOpenCurly
@@ -211,22 +212,29 @@ Declaration:
         // Save as a local symbol
         symbol_table->addSymbol(symbol);
 
-        // If it wasn't inherited
-        if (parent_symbol_it == symbol_table->getParentSymbols().end()) 
-        {
-            // Emit 'alloca' instruction
-            symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
-                nullptr, Symbol::getTemp());
+            // If it wasn't inherited
+            if (parent_symbol_it == symbol_table->getParentSymbols().end()) 
+            {
+                // If this is a function callback
+                if (argument->type->getKind() == Type::KindPointer && argument->type->subtype->getKind() == Type::KindFunction) {
+                    symbol->lladdress = builder->CreateGEP(argument->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp());
+                }
+                else {
+                    // Emit 'alloca' instruction
+                    symbol->lladdress = builder->CreateAlloca(symbol->type->lltype,
+                            nullptr, Symbol::getTemp());
 
-            // Emit 'store' instruction
-            builder->CreateStore(it, symbol->lladdress);
+                    // Emit 'store' instruction
+                    builder->CreateStore(it, symbol->lladdress);
+                }
 
-        } else {
-            // Emit GEP to reference the address passed in by the arg
-            // In this way, whatever was located at the address will be modified,
-            // rather than creating a local copy
-            symbol->lladdress = builder->CreateGEP(argument->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp());
-        }
+            } else {
+
+                // Emit GEP to reference the address passed in by the arg
+                // In this way, whatever was located at the address will be modified,
+                // rather than creating a local copy
+                symbol->lladdress = builder->CreateGEP(argument->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp());
+            }
     }
 
 }
@@ -255,7 +263,6 @@ Declarations Statements TokenCloseCurly
 FunctionDeclaration:
 Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
 {
-
 
     // Create type
     Type *type = new Type(Type::KindFunction);
@@ -321,6 +328,16 @@ FormalArgumentsComma:
 {
     Symbol *symbol = new Symbol($3);
     symbol->type = $2;
+    symbol->index = $1->size();
+    $$->push_back(symbol);
+}
+| FormalArgumentsComma FunctionDeclaration TokenComma
+{
+    // If we see a function being declared as a formal arg, it's a callback
+    Symbol *symbol = new Symbol($2->getName());
+    symbol->lladdress = builder->CreateGEP($2->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp());
+    symbol->type = new Type(Type::KindPointer);
+    symbol->type->subtype = $2->type;
     symbol->index = $1->size();
     $$->push_back(symbol);
 }
@@ -719,7 +736,6 @@ Expression
 
 | TokenId TokenOpenPar ActualArguments TokenClosePar
 {
-
     // Search function in local scope
     SymbolTable *symbol_table = currentScope;
     Symbol *symbol = symbol_table->getSymbol($1);
@@ -730,42 +746,55 @@ Expression
         symbol = symbol_table->getSymbol($1);
     }
 
-    // Undeclared, or not a function
-    if (!symbol || symbol->type->getKind() != Type::KindFunction)
-    {
-        std::cerr << "Identifier is not a function: " << $1 << '\n';
-        exit(1);
+    if (symbol && symbol->type->getKind() == Type::KindPointer 
+            && symbol->type->subtype 
+            && symbol->type->subtype->getKind() == Type::KindFunction) {
+        // If this is a callback function
+        $$ = builder->CreateCall(symbol->lladdress,
+                *$3,
+                symbol->type->subtype->rettype->getKind() == Type::KindVoid ?
+                "" : Symbol::getTemp());
     }
 
-    // let's cast the symbol to a function so we can get a list of arguments
-    llvm::Function * callee = llvm::cast<llvm::Function>(symbol->lladdress);
+    else {
 
-    // Find and add all values that will be inherited by the function 
-    // to the list of actual arguments
-    int index = 0;
-    for (llvm::Function::arg_iterator it = callee->arg_begin(),
-            end = callee->arg_end();
-            it != end;
-            ++it)
-    {
-        // get argument
-        Symbol *argument = (*symbol->type->arguments)[index++];
-
-        // ignore the explicitly declared arguments, they should already be there
-        if (index < $3->size()) continue;
-
-        // check locally for the variable to pass down
-        Symbol * stackFrameArg = currentScope->getSymbol(argument->getName());
-        if (stackFrameArg) {
-            $3->push_back(builder->CreateGEP(stackFrameArg->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp()));
+        // Undeclared, or not a function
+        if (!symbol || symbol->type->getKind() != Type::KindFunction)
+        {
+            std::cerr << "Identifier is not a function: " << $1 << '\n';
+            exit(1);
         }
+
+        // let's cast the symbol to a function so we can get a list of arguments
+        llvm::Function * callee = llvm::cast<llvm::Function>(symbol->lladdress);
+
+        // Find and add all values that will be inherited by the function 
+        // to the list of actual arguments
+        int index = 0;
+        for (llvm::Function::arg_iterator it = callee->arg_begin(),
+                end = callee->arg_end();
+                it != end;
+                ++it)
+        {
+            // get argument
+            Symbol *argument = (*symbol->type->arguments)[index++];
+
+            // ignore the explicitly declared arguments, they should already be there
+            if (index < $3->size()) continue;
+
+            // check locally for the variable to pass down
+            Symbol * stackFrameArg = currentScope->getSymbol(argument->getName());
+            if (stackFrameArg) {
+                $3->push_back(builder->CreateGEP(stackFrameArg->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp()));
+            }
+        }
+        // Invoke
+        $$ = builder->CreateCall(symbol->lladdress,
+                *$3,
+                symbol->type->rettype->getKind() == Type::KindVoid ?
+                "" : Symbol::getTemp());
     }
 
-    // Invoke
-    $$ = builder->CreateCall(symbol->lladdress,
-            *$3,
-            symbol->type->rettype->getKind() == Type::KindVoid ?
-            "" : Symbol::getTemp());
 }
 
 ActualArguments:
@@ -920,7 +949,12 @@ int main(int argc, char **argv)
 
 void yyerror(const char *s)
 {
-    currentScope->dump();
+    module->dump();
+    //// dump the symbol table
+    //for (SymbolTable *st : environment) {
+    //    st->dump();
+    //}
+    //currentScope->dump();
     std::cerr << s << std::endl;
     exit(1);
 }

@@ -30,6 +30,10 @@ using namespace std;
     return TokenVoid;
 }
 
+"function" {
+    return TokenFunction;
+}
+
 "struct" {
     return TokenStruct;
 }

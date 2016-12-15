@@ -8,7 +8,7 @@ void foo(int a) {
 
 // function bar takes a callback function as an arg specified by the "function" keyword
 // Think of this as something like "forEach" but for only one value not an array
-void bar(function f, int x) {
+void bar(void f(int x), int x) {
     f(x);
 }
 

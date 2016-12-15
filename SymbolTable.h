@@ -71,11 +71,11 @@ class SymbolTable
             {
                 parentSymbols = parentTable->getAllSymbols(); 
                 // Debug hack to see if functions are actually receiving parent symbols before creation, delete before turning in
-                std::cerr << "Values inherited by new scope:\n";
-                for (auto it = parentSymbols.begin(); it != parentSymbols.end(); it++) {
-                    std::cerr << "Symbol Table Key : " << it->first << "\n";
-                    it->second->dump(1);
-                }
+                //std::cerr << "Values inherited by new scope:\n";
+                //for (auto it = parentSymbols.begin(); it != parentSymbols.end(); it++) {
+                //    std::cerr << "Symbol Table Key : " << it->first << "\n";
+                //    it->second->dump(1);
+                //}
             }
         }
         /// Return the symbol table scope
