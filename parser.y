@@ -164,10 +164,7 @@ Declaration:
                 nullptr, Symbol::getTemp());
 
     // Insert in symbol table
-    std::cerr << "ADDING SYMBOL:\t";
-    symbol->dump();
     symbol_table->addSymbol(symbol);
-    symbol_table->dump();
 }
 
 | FunctionDeclaration TokenOpenCurly
@@ -185,7 +182,6 @@ Declaration:
 
     // Current LLVM function
     function = llvm::cast<llvm::Function>($1->lladdress);
-    function->dump();
 
     // Create entry basic block
     basic_block = llvm::BasicBlock::Create(
@@ -240,7 +236,6 @@ Declarations Statements TokenCloseCurly
 
     // Return statement, if not present
     if (!basic_block->getTerminator()) {
-        std::cerr << "Creating return void for function:\t" << function->getName().str() << "\n";
         builder->CreateRetVoid();
     }
 
@@ -261,7 +256,6 @@ FunctionDeclaration:
 Pointer TokenId TokenOpenPar FormalArguments TokenClosePar
 {
 
-    std::cerr << "\nGenerating llvm for function declaration: " << $2 << "\n";
 
     // Create type
     Type *type = new Type(Type::KindFunction);
@@ -418,7 +412,6 @@ Declaration { }
 
 | TokenReturn Expression TokenSemicolon
 {
-    std::cerr << "Creating return expression\n";
     builder->CreateRet($2);
 }
 
@@ -733,7 +726,6 @@ Expression
 
     // Look up the scope tree until we find something or hit global scope
     while (!symbol && symbol_table->getParentTable()) {
-        std::cerr << "LOOKIN SOME MORE\n";
         symbol_table = symbol_table->getParentTable();
         symbol = symbol_table->getSymbol($1);
     }
@@ -763,7 +755,6 @@ Expression
         if (index < $3->size()) continue;
 
         // check locally for the variable to pass down
-        std::cerr << "DOIN IT\n";
         Symbol * stackFrameArg = currentScope->getSymbol(argument->getName());
         if (stackFrameArg) {
             $3->push_back(builder->CreateGEP(stackFrameArg->lladdress, *(new std::vector<llvm::Value *>()), Symbol::getTemp()));
@@ -822,13 +813,10 @@ TokenId
     // Undeclared in this scope and parent scopes
     if (!symbol)
     {
-        currentScope->dump();
         std::cerr << "Undeclared identifier: " << $1 << '\n';
         exit(1);
     }
 
-    //std::cerr << "found symbol:\t";
-    //symbol->dump();
 
     // Save info
     $$.type = symbol->type;
@@ -925,12 +913,8 @@ int main(int argc, char **argv)
         yyparse();
     } while (!feof(yyin));
 
-    environment.back()->dump();
-
     // Dump module
-    std::cerr << "\n\n\n\n\n================================ LLVM CODE ================================\n\n\n";
     module->dump();
-    std::cerr << "\n\n\n============================== END LLVM CODE ==============================\n\n\n\n\n";
     return 0;
 }
 
